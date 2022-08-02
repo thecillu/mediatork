@@ -1,0 +1,11 @@
+mediator_paths:
+  -  "com.cillu.mediator.integrationevents.config.success"
+mediator_servicebus:
+  name: rabbitmq
+  rabbitMq:
+    connectionUrl: amqp://guest:guest@localhost:5672/
+    exchangeName: platform_topic
+    queueName: microservice4
+    exchangeType: topic
+    consumerRetryLimit: 10
+
