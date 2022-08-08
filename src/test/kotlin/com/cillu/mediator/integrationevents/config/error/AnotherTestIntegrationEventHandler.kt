@@ -4,10 +4,11 @@ import com.cillu.mediator.annotations.IntegrationEventHandler
 import com.cillu.mediator.integrationevents.IIntegrationEventHandler
 import com.cillu.mediator.integrationevents.domain.TestIntegrationEvent
 import com.cillu.mediator.services.AnotherService
+import com.cillu.mediator.services.IAnotherService
 import mu.KotlinLogging
 
 @IntegrationEventHandler
-class AnotherTestIntegrationEventHandler(var anotherService: AnotherService) : IIntegrationEventHandler<TestIntegrationEvent>, Exception() {
+class AnotherTestIntegrationEventHandler(var anotherService: IAnotherService) : IIntegrationEventHandler<TestIntegrationEvent>, Exception() {
 
     private val logger = KotlinLogging.logger {}
 

@@ -3,21 +3,22 @@ package com.cillu.mediator.mappers
 import com.cillu.mediator.MediatorK
 import com.cillu.mediator.annotations.IntegrationEventHandler
 import com.cillu.mediator.exceptions.IntegrationEventHandlerConfigurationException
+import com.cillu.mediator.registry.ServiceRegistry
 import mu.KotlinLogging
 
-class IntegrationEventHandlersMapper(mediatorK: MediatorK ) {
+class IntegrationEventHandlersMapper(mediatorK: MediatorK, servicesRegistry: ServiceRegistry): HandlerMapper() {
     private val logger = KotlinLogging.logger {}
     private var integrationEventHandlers: MutableMap<String, Class<IntegrationEventHandler>> = HashMap()
 
     init {
-        register(mediatorK)
+        register(mediatorK, servicesRegistry)
     }
 
     internal fun getHandlers(): MutableMap<String, Class<IntegrationEventHandler>> {
         return integrationEventHandlers;
     }
 
-    private fun register(mediatorK: MediatorK)
+    private fun register(mediatorK: MediatorK, servicesRegistry: ServiceRegistry)
     {
         // Registering IntegrationEventHandlers
         val annotatedClasses: Set<Class<IntegrationEventHandler>> =
@@ -28,6 +29,8 @@ class IntegrationEventHandlersMapper(mediatorK: MediatorK ) {
             )
             var integrationEventName = annotatedClass.genericInterfaces[0].typeName.substringAfter("<").substringBefore(">")
             if (integrationEventHandlers.containsKey(integrationEventName)) throw IntegrationEventHandlerConfigurationException(integrationEventName)
+            //check registered services
+            checkServices(annotatedClass, servicesRegistry)
             integrationEventHandlers[integrationEventName] = annotatedClass
             logger.info("Registered handler ${annotatedClass} for IntegrationEvent ${integrationEventName}")
             // Bind the integration event with routingKey = integrationEventName

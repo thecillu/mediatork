@@ -4,23 +4,25 @@ import com.cillu.mediator.Event
 import com.cillu.mediator.annotations.CommandHandler
 import com.cillu.mediator.annotations.QueryHandler
 import com.cillu.mediator.exceptions.CommandHandlerConfigurationException
+import com.cillu.mediator.exceptions.MissingServiceException
 import com.cillu.mediator.exceptions.QueryHandlerConfigurationException
+import com.cillu.mediator.registry.ServiceRegistry
 import mu.KotlinLogging
 import org.reflections.Reflections
 
-class CommandHandlersMapper(reflections: Reflections) {
+class CommandHandlersMapper(reflections: Reflections, servicesRegistry: ServiceRegistry): HandlerMapper() {
     private val logger = KotlinLogging.logger {}
     private var commandHandlers: MutableMap<String, Class<CommandHandler>> = HashMap()
 
     init {
-        register(reflections)
+        register(reflections, servicesRegistry)
     }
 
     internal fun getHandlers():  MutableMap<String, Class<CommandHandler>> {
         return commandHandlers;
     }
 
-    private fun register(reflections: Reflections) {
+    private fun register(reflections: Reflections, servicesRegistry: ServiceRegistry) {
         // Registering CommandHandlers
         val annotatedClasses: Set<Class<CommandHandler>> =
             reflections.getTypesAnnotatedWith(CommandHandler()) as Set<Class<CommandHandler>>
@@ -30,8 +32,11 @@ class CommandHandlersMapper(reflections: Reflections) {
             )
             var command = annotatedClass.genericInterfaces[0].typeName.substringAfter("<").substringBefore(">")
             if (commandHandlers.containsKey(command)) throw CommandHandlerConfigurationException(command)
+            //check registered services
+            checkServices(annotatedClass, servicesRegistry)
             commandHandlers[command] = annotatedClass
             logger.info("Registered handler ${annotatedClass} for command ${command}")
         }
     }
+
 }

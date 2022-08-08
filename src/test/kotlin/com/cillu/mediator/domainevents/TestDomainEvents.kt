@@ -2,17 +2,22 @@ package com.cillu.mediator.domainevents
 
 import com.cillu.mediator.TestBase
 import com.cillu.mediator.TestItem
+import com.cillu.mediator.annotations.DomainEventHandler
+import com.cillu.mediator.domainevents.config.noservice.TestNoServiceDomainEventHandler
 import com.cillu.mediator.domainevents.config.success.TestDomainEvent2Handler
 import com.cillu.mediator.domainevents.config.success.TestDomainEventHandler2
 import com.cillu.mediator.domainevents.config.success.TestDomainEventHandler
 import com.cillu.mediator.domainevents.domain.TestDomainEvent
+import com.cillu.mediator.exceptions.MissingServiceException
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class TestDomainEvents(): TestBase() {
 
 
     private val TEST_DOMAINEVENT_CLASS = "com.cillu.mediator.domainevents.domain.TestDomainEvent"
     private val TEST_DOMAINEVENT2_CLASS = "com.cillu.mediator.domainevents.domain.TestDomainEvent2"
+
 
     @Test
     fun successConfig() {
@@ -37,5 +42,25 @@ class TestDomainEvents(): TestBase() {
         assert( testItem.getDomainEvents()[0]::class.java == TestDomainEvent::class.java )
         mediatorK.raiseDomainEvents(testItem)
         assert(testItem.getDomainEvents().isEmpty())
+    }
+
+    @Test
+    fun missingService() {
+        assertThrows<MissingServiceException> {
+            val mediatorK = getMediatorK(DOMAIN_EVENTS_CONFIG_FILE_SUCCESS_MISSING)
+        }
+    }
+
+    @Test
+    fun successConfigNoService() {
+        val mediatorK = getMediatorK(DOMAIN_EVENTS_CONFIG_FILE_SUCCESS_NOSERVICE, false)
+        val handlers = mediatorK.getDomainEventsHandlers()
+        assert( handlers.size == 1)
+        val domainEventSet: MutableSet<Class<DomainEventHandler>> = handlers.getOrDefault(TEST_DOMAINEVENT_CLASS, mutableSetOf())
+        var found = false
+        domainEventSet.forEach{
+            if (it == TestNoServiceDomainEventHandler::class.java) found = true
+        }
+        assert( found)
     }
 }

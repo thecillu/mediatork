@@ -2,8 +2,11 @@ package com.cillu.mediator.integrationevents
 
 import com.cillu.mediator.TestBase
 import com.cillu.mediator.TestItem
+import com.cillu.mediator.commands.config.noservice.TestNoServiceCommandHandler
 import com.cillu.mediator.exceptions.IntegrationEventHandlerConfigurationException
 import com.cillu.mediator.exceptions.IntegrationEventHandlerNotFoundException
+import com.cillu.mediator.exceptions.MissingServiceException
+import com.cillu.mediator.integrationevents.config.noservice.TestNoServiceIntegrationEventHandler
 import com.cillu.mediator.integrationevents.config.success.TestIntegrationEvent2Handler
 import com.cillu.mediator.integrationevents.config.success.TestIntegrationEventHandler
 import com.cillu.mediator.integrationevents.domain.TestIntegrationEvent
@@ -47,5 +50,21 @@ class TestIntegrationEvents(): TestBase() {
     fun submit() {
         val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SUCCESS)
         mediatorK.publish(FakeIntegrationEvent())
+    }
+
+    @Test
+    fun missingService() {
+        assertThrows<MissingServiceException> {
+            val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_MISSING_SERVICE)
+        }
+    }
+
+
+    @Test
+    fun successConfigNoService() {
+        val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SUCCESS_NOSERVICE, false)
+        val handlers = mediatorK.getIntegrationEventsHandlers()
+        assert( handlers.size == 1)
+        assert( handlers[TEST_INTEGRATIONEVENT_CLASS] == TestNoServiceIntegrationEventHandler::class.java)
     }
 }

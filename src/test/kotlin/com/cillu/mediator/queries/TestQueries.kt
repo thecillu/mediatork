@@ -2,8 +2,10 @@ package com.cillu.mediator.queries
 
 import com.cillu.mediator.TestBase
 import com.cillu.mediator.TestItem
+import com.cillu.mediator.exceptions.MissingServiceException
 import com.cillu.mediator.exceptions.QueryHandlerConfigurationException
 import com.cillu.mediator.exceptions.QueryHandlerNotFoundException
+import com.cillu.mediator.queries.config.noservice.TestNoServiceQueryHandler
 import com.cillu.mediator.queries.config.success.TestQuery2Handler
 import com.cillu.mediator.queries.config.success.TestQueryHandler
 import com.cillu.mediator.queries.domain.TestQuery
@@ -55,5 +57,21 @@ class TestQueries: TestBase() {
         val mediatorK = getMediatorK(QUERY_CONFIG_FILE_SUCCESS)
         val items: List<TestItem> = mediatorK.send(TestQuery2()) as List<TestItem>
         assert( items.size == 2)
+    }
+
+    @Test
+    fun missingService() {
+        assertThrows<MissingServiceException> {
+            val mediatorK = getMediatorK(QUERY_CONFIG_FILE_MISSING_SERVICE)
+        }
+    }
+
+
+    @Test
+    fun successConfigNoService() {
+        val mediatorK = getMediatorK(QUERY_CONFIG_FILE_NOSERVICE, false)
+        val handlers = mediatorK.getQueryHandlers()
+        assert( handlers.size == 1)
+        assert( handlers[TEST_QUERY_CLASS] == TestNoServiceQueryHandler::class.java)
     }
 }

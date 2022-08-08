@@ -18,7 +18,7 @@ class RabbitMQServiceBus: IServiceBus {
     private var channel: Channel
     private var logger = KotlinLogging.logger {}
 
-    constructor(connectionUrl: String, exchangeName: String, queueName: String,
+    internal constructor(connectionUrl: String, exchangeName: String, queueName: String,
                 exchangeType: String, consumerRetryLimit: Int)
     {
         this.connectionUrl = connectionUrl
