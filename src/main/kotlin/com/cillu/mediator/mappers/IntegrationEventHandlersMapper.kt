@@ -34,10 +34,10 @@ class IntegrationEventHandlersMapper(mediatorK: MediatorK, servicesRegistry: Ser
             integrationEventHandlers[integrationEventName] = annotatedClass
             logger.info("Registered handler ${annotatedClass} for IntegrationEvent ${integrationEventName}")
             // Bind the integration event with routingKey = integrationEventName
-            mediatorK.serviceBus.bind(integrationEventName)
+            mediatorK.messageBroker.bind(integrationEventName)
         }
         // Listen for binded IntegrationEvents
-        mediatorK.serviceBus.consume( mediatorK )
+        mediatorK.messageBroker.consume( mediatorK )
     }
 
 }

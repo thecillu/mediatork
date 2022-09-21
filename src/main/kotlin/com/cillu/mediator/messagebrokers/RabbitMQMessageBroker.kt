@@ -7,7 +7,7 @@ import com.rabbitmq.client.*
 import mu.KotlinLogging
 import java.io.IOException
 
-class RabbitMQMessageBroker: IMessageBroker {
+class RabbitMQMessageBroker : IMessageBroker {
     private var connectionUrl: String //= "amqp://guest:guest@localhost:5672/"
     private var exchangeName: String //= "platform_topic"
     private var queueName: String //= "microservice1"
@@ -18,9 +18,10 @@ class RabbitMQMessageBroker: IMessageBroker {
     private var channel: Channel
     private var logger = KotlinLogging.logger {}
 
-    internal constructor(connectionUrl: String, exchangeName: String, queueName: String,
-                exchangeType: String, consumerRetryLimit: Int)
-    {
+    internal constructor(
+        connectionUrl: String, exchangeName: String, queueName: String,
+        exchangeType: String, consumerRetryLimit: Int
+    ) {
         this.connectionUrl = connectionUrl
         this.exchangeName = exchangeName
         this.queueName = queueName
@@ -48,7 +49,7 @@ class RabbitMQMessageBroker: IMessageBroker {
         channel.queueBind(dlqQueueName, dlqExchangeName, integrationEventName)
     }
 
-    override fun consume( mediator: IMediator ) {
+    override fun consume(mediator: IMediator) {
         logger.info("Creating ServiceBus Consumer")
         val consumer: Consumer = object : DefaultConsumer(channel) {
             @Throws(IOException::class)
@@ -60,14 +61,13 @@ class RabbitMQMessageBroker: IMessageBroker {
             ) {
                 val deliveryTag = envelope!!.deliveryTag
                 val integrationEventName: String = envelope.routingKey ?: ""
-                try
-                {
+                try {
                     val message = String(body!!)
                     logger.info("Received $integrationEventName with payload: $message")
                     process(mediator, integrationEventName, message)
                     channel.basicAck(deliveryTag, false)
                     logger.info("ACK sent for $integrationEventName")
-                } catch (e:Exception){
+                } catch (e: Exception) {
                     e.printStackTrace()
                     channel.basicNack(deliveryTag, false, true)
                     logger.info("NACK sent for $integrationEventName")
@@ -79,7 +79,7 @@ class RabbitMQMessageBroker: IMessageBroker {
         channel.basicConsume(queueName, false, consumer);
     }
 
-    private fun process( mediator: IMediator, integrationEventName:String, message: String){
+    private fun process(mediator: IMediator, integrationEventName: String, message: String) {
         var integrationEvent = Gson().fromJson(message, Class.forName(integrationEventName))
         mediator.process(integrationEvent as IntegrationEvent)
     }

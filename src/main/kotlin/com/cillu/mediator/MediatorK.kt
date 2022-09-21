@@ -24,8 +24,10 @@ import org.reflections.Reflections
 import org.reflections.util.ClasspathHelper
 import org.reflections.util.ConfigurationBuilder
 
-class MediatorK private constructor(mediatorPaths: List<String>, internal val serviceBus: IMessageBroker,
-                                    private val servicesRegistry: ServiceRegistry): IMediator {
+class MediatorK private constructor(
+    mediatorPaths: List<String>, internal val messageBroker: IMessageBroker,
+    private val servicesRegistry: ServiceRegistry
+) : IMediator {
     private val logger = KotlinLogging.logger {}
     private var queryHandlersMapper: QueryHandlersMapper
     private var commandHandlersMapper: CommandHandlersMapper
@@ -34,50 +36,59 @@ class MediatorK private constructor(mediatorPaths: List<String>, internal val se
     internal var reflections: Reflections
 
     companion object {
-        fun create(mediatorPaths: List<String>, serviceBus: IMessageBroker, servicesRegistry: ServiceRegistry = ServiceRegistry()): IMediator {
-            return MediatorK(mediatorPaths, serviceBus, servicesRegistry);
+        fun create(
+            mediatorPaths: List<String>,
+            messageBroker: IMessageBroker,
+            servicesRegistry: ServiceRegistry = ServiceRegistry()
+        ): IMediator {
+            return MediatorK(mediatorPaths, messageBroker, servicesRegistry);
         }
     }
 
-    init
-    {
+    init {
         reflections = getReflections(mediatorPaths)
         queryHandlersMapper = QueryHandlersMapper(reflections, servicesRegistry)
         commandHandlersMapper = CommandHandlersMapper(reflections, servicesRegistry)
         domainEventHandlersMapper = DomainEventHandlersMapper(reflections, servicesRegistry)
-        integrationEventHandlersMapper = IntegrationEventHandlersMapper( this, servicesRegistry)
+        integrationEventHandlersMapper = IntegrationEventHandlersMapper(this, servicesRegistry)
     }
 
-    private fun getReflections(mediatorPaths: List<String>): Reflections{
+    private fun getReflections(mediatorPaths: List<String>): Reflections {
         val paths = mediatorPaths.toTypedArray()
         return if (paths.isNullOrEmpty() || paths.size == 1 && (paths.contains("*") || paths[0].isNullOrEmpty())) {
-            logger.info("Scanning all packages" )
+            logger.info("Scanning all packages")
             Reflections(
                 ConfigurationBuilder()
                     .addUrls(ClasspathHelper.forJavaClassPath())
             )
         } else {
-            paths.forEach {  logger.info("Scanning package $it" ) }
+            paths.forEach { logger.info("Scanning package $it") }
             Reflections(*paths)
         }
     }
 
     override fun send(command: Command): Any? {
-        val annotatedClass = commandHandlersMapper.getHandlers()[command::class.java.name] ?: throw CommandHandlerNotFoundException(command::class.java.name)
+        val annotatedClass =
+            commandHandlersMapper.getHandlers()[command::class.java.name] ?: throw CommandHandlerNotFoundException(
+                command::class.java.name
+            )
         val methodHandler = annotatedClass.getMethod("handle", Command::class.java)
         var constructorArgs = getConstructorArgs(annotatedClass)
         logger.info("Invoking ${annotatedClass.name} with params: ${constructorArgs.toTypedArray()} for command $command");
-        val result = methodHandler?.invoke(annotatedClass.constructors[0].newInstance(*constructorArgs.toTypedArray()), command)
+        val result =
+            methodHandler?.invoke(annotatedClass.constructors[0].newInstance(*constructorArgs.toTypedArray()), command)
         logger.info("Invoked ${annotatedClass.name} for command $command")
         return result
     }
 
     override fun send(query: Query): Any? {
-        val annotatedClass = queryHandlersMapper.getHandlers()[query::class.java.name] ?: throw QueryHandlerNotFoundException(query::class.java.name)
+        val annotatedClass = queryHandlersMapper.getHandlers()[query::class.java.name]
+            ?: throw QueryHandlerNotFoundException(query::class.java.name)
         val methodHandler = annotatedClass.getMethod("handle", Query::class.java)
         var constructorArgs = getConstructorArgs(annotatedClass)
         logger.info("Invoking ${annotatedClass.name} with params: ${constructorArgs.toTypedArray()} for query $query");
-        val result = methodHandler?.invoke(annotatedClass.constructors[0].newInstance(*constructorArgs.toTypedArray()), query)
+        val result =
+            methodHandler?.invoke(annotatedClass.constructors[0].newInstance(*constructorArgs.toTypedArray()), query)
         logger.info("Invoked ${annotatedClass.name} for query $query")
         return result
     }
@@ -134,25 +145,29 @@ class MediatorK private constructor(mediatorPaths: List<String>, internal val se
     override fun publish(integrationEvent: IntegrationEvent) {
         val integrationEventName: String = integrationEvent::class.java.name
         logger.info("Publishing $integrationEventName")
-        serviceBus.publish(integrationEvent)
+        messageBroker.publish(integrationEvent)
         logger.info("Published $integrationEventName")
     }
 
-    override fun process(integrationEvent: IntegrationEvent){
+    override fun process(integrationEvent: IntegrationEvent) {
         val integrationEventName: String = integrationEvent::class.java.name
         val annotatedClass =
-            integrationEventHandlersMapper.getHandlers()[integrationEventName] ?: throw IntegrationEventHandlerNotFoundException(
-                integrationEventName
-            )
+            integrationEventHandlersMapper.getHandlers()[integrationEventName]
+                ?: throw IntegrationEventHandlerNotFoundException(
+                    integrationEventName
+                )
         logger.info("Processing $integrationEventName with Handler $annotatedClass")
         val methodHandler = annotatedClass.getMethod("handle", IntegrationEvent::class.java)
         var constructorArgs = getConstructorArgs(annotatedClass)
         logger.info("Invoking ${annotatedClass.name} with params: ${constructorArgs.toTypedArray()} for event $integrationEventName");
-        methodHandler?.invoke(annotatedClass.constructors[0].newInstance(*constructorArgs.toTypedArray()), integrationEvent)
+        methodHandler?.invoke(
+            annotatedClass.constructors[0].newInstance(*constructorArgs.toTypedArray()),
+            integrationEvent
+        )
         logger.info("Invoked $annotatedClass for event $integrationEventName")
     }
 
-    override fun getQueryHandlers(): MutableMap<String, Class<QueryHandler>>{
+    override fun getQueryHandlers(): MutableMap<String, Class<QueryHandler>> {
         return queryHandlersMapper.getHandlers();
     }
 
@@ -160,15 +175,15 @@ class MediatorK private constructor(mediatorPaths: List<String>, internal val se
         return servicesRegistry;
     }
 
-    override fun getCommandsHandlers(): MutableMap<String, Class<CommandHandler>>{
+    override fun getCommandsHandlers(): MutableMap<String, Class<CommandHandler>> {
         return commandHandlersMapper.getHandlers();
     }
 
-    override fun getDomainEventsHandlers(): MutableMap<String, MutableSet<Class<DomainEventHandler>>>{
+    override fun getDomainEventsHandlers(): MutableMap<String, MutableSet<Class<DomainEventHandler>>> {
         return domainEventHandlersMapper.getHandlers();
     }
 
-    override fun getIntegrationEventsHandlers(): MutableMap<String, Class<IntegrationEventHandler>>{
+    override fun getIntegrationEventsHandlers(): MutableMap<String, Class<IntegrationEventHandler>> {
         return integrationEventHandlersMapper.getHandlers();
     }
 

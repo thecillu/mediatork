@@ -1,21 +1,28 @@
 package com.cillu.mediator.messagebrokers
 
-class MessageBrokerFactory private constructor(){
+class MessageBrokerFactory private constructor() {
 
-    companion object{
+    companion object {
         fun getMessageBroker(mediatorConfiguration: com.cillu.mediator.configuration.Mediator): IMessageBroker {
-            return when(mediatorConfiguration.mediatorServicebus.name) {
+            return when (mediatorConfiguration.mediatorServicebus.name) {
                 "local-service-bus" -> LocalMessageBroker()
                 "azure-service-bus" -> throw NotImplementedError()
                 "awsSns" -> AwsSnsMessageBroker(
                     mediatorConfiguration.mediatorServicebus.awsSns!!.region,
                     mediatorConfiguration.mediatorServicebus.awsSns!!.topicName,
-                    mediatorConfiguration.mediatorServicebus.awsSns!!.queueName)
+                    mediatorConfiguration.mediatorServicebus.awsSns!!.queueName,
+                    mediatorConfiguration.mediatorServicebus.awsSns!!.consumer.maxConsumers,
+                    mediatorConfiguration.mediatorServicebus.awsSns!!.consumer.maxMessages,
+                    mediatorConfiguration.mediatorServicebus.awsSns!!.consumer.waitTimeSeconds,
+                    mediatorConfiguration.mediatorServicebus.awsSns!!.consumer.retryAfterSeconds
+                )
                 "rabbitMq" -> RabbitMQMessageBroker(
                     mediatorConfiguration.mediatorServicebus.rabbitMq!!.connectionUrl,
                     mediatorConfiguration.mediatorServicebus.rabbitMq!!.exchangeName,
-                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.queueName, mediatorConfiguration.mediatorServicebus.rabbitMq!!.exchangeType,
-                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.consumerRetryLimit)
+                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.queueName,
+                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.exchangeType,
+                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.consumerRetryLimit
+                )
                 else -> throw NotImplementedError()
             }
         }
