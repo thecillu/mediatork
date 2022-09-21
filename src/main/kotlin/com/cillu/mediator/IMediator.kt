@@ -13,12 +13,12 @@ import com.cillu.mediator.registry.ServiceRegistry
 import mu.KotlinLogging
 
 interface IMediator {
-//    fun registerService(classType: Class<*>, objectInstance: Any)
-    fun send( command: Command ): Any?
-    fun send( query: Query ): Any?
-    fun raiseDomainEvents( aggregate: Aggregate )
-    fun publish( integrationEvent: IntegrationEvent )
-    fun process( integrationEvent: IntegrationEvent )
+    //    fun registerService(classType: Class<*>, objectInstance: Any)
+    fun send(command: Command): Any?
+    fun send(query: Query): Any?
+    fun raiseDomainEvents(aggregate: Aggregate)
+    fun publish(integrationEvent: IntegrationEvent)
+    fun process(integrationEvent: IntegrationEvent)
     fun getCommandsHandlers(): MutableMap<String, Class<CommandHandler>>
     fun getDomainEventsHandlers(): MutableMap<String, MutableSet<Class<DomainEventHandler>>>
     fun getIntegrationEventsHandlers(): MutableMap<String, Class<IntegrationEventHandler>>

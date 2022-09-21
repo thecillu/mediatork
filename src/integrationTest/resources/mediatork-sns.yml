@@ -3,9 +3,14 @@ mediator_paths:
 mediator_servicebus:
   name: awsSns
   awsSns:
-    region: eu-south-1
+    region: eu-west-1
     topicName: platform_topic
     queueName: microservice1
+    consumer:
+      maxConsumers: 20
+      maxMessages: 5
+      waitTimeSeconds: 20
+      retryAfterSeconds: 1
 
 logging:
   level:

@@ -11,7 +11,7 @@ class FakeIntegrationEventHandler(val memoryRepository: MemoryRepository) : IInt
 
     private val logger = KotlinLogging.logger {}
 
-    override fun handle( fakeIntegrationEventHandler: FakeIntegrationEvent) {
+    override fun handle( event: FakeIntegrationEvent) {
         logger.info("Executing FakeIntegrationEvent")
         memoryRepository.increment()
         logger.info("Executed FakeIntegrationEvent")

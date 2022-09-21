@@ -2,9 +2,9 @@ package com.cillu.mediator.messagebrokers
 
 class AwsSqsPolicy {
 
-    companion object{
-        public fun getPolicyDocument(queueArnVal:String, topicArnVal:String): String {
-            val policyDocumentVal = """
+    companion object {
+        public fun getPolicyDocument(queueArnVal: String, topicArnVal: String): String {
+            return """
             {
                 "Version": "2012-10-17",
                 "Statement": 
@@ -23,8 +23,15 @@ class AwsSqsPolicy {
                 }]
             }
         """.trimIndent()
-            println(policyDocumentVal)
-            return policyDocumentVal
+        }
+
+        public fun getRedrivePolicy(deadLetterQueueArn: String, consumerRetryLimit: Int): String {
+            return """
+            {
+              "deadLetterTargetArn": "$deadLetterQueueArn",
+              "maxReceiveCount": "$consumerRetryLimit"
+             }
+            """.trimIndent()
         }
     }
 }

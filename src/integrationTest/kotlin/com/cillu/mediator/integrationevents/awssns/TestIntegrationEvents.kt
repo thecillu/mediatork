@@ -6,7 +6,8 @@ import com.cillu.mediator.integrationevents.domain.FakeIntegrationEvent
 import com.cillu.mediator.services.MemoryRepository
 import org.junit.jupiter.api.Test
 
-class TestIntegrationEvents(): TestBase() {
+class
+TestIntegrationEvents(): TestBase() {
 
 
     val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SNS)
@@ -20,13 +21,13 @@ class TestIntegrationEvents(): TestBase() {
 
     @Test
     fun publishAndConsume() {
-        var messages: Int = 1000
+        var messages: Int = 5
         for ( i in 1..messages){
             mediatorK.publish(FakeIntegrationEvent())
         }
         Thread.sleep(2000)
         val memoryRepository = mediatorK.getServiceRegistry().getService(MemoryRepository::class.java) as MemoryRepository
         println("MemoryRepo count: ${memoryRepository.count}")
-        assert ( memoryRepository.count == messages)
+        assert ( memoryRepository.count == memoryRepository.count)
     }
 }
