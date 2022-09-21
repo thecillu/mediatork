@@ -2,11 +2,12 @@ package com.cillu.mediator.integrationevents
 
 import com.cillu.mediator.TestBase
 import com.cillu.mediator.TestItem
-import com.cillu.mediator.commands.config.noservice.TestNoServiceCommandHandler
-import com.cillu.mediator.exceptions.IntegrationEventHandlerConfigurationException
+import com.cillu.mediator.exceptions.MutipleIntegrationEventHandlerConfigurationException
 import com.cillu.mediator.exceptions.IntegrationEventHandlerNotFoundException
 import com.cillu.mediator.exceptions.MissingServiceException
 import com.cillu.mediator.integrationevents.config.noservice.TestNoServiceIntegrationEventHandler
+import com.cillu.mediator.integrationevents.config.success.FakeIntegrationEventHandler
+import com.cillu.mediator.integrationevents.domain.FakeIntegrationEvent
 import com.cillu.mediator.integrationevents.config.success.TestIntegrationEvent2Handler
 import com.cillu.mediator.integrationevents.config.success.TestIntegrationEventHandler
 import com.cillu.mediator.integrationevents.domain.TestIntegrationEvent
@@ -17,21 +18,21 @@ class TestIntegrationEvents(): TestBase() {
 
     private val TEST_INTEGRATIONEVENT_CLASS = "com.cillu.mediator.integrationevents.domain.TestIntegrationEvent"
     private val TEST_INTEGRATIONEVENT2_CLASS = "com.cillu.mediator.integrationevents.domain.TestIntegrationEvent2"
+    private val FAKE_INTEGRATIONEVENT_CLASS = "com.cillu.mediator.integrationevents.domain.FakeIntegrationEvent"
 
     @Test
     fun successConfig() {
         val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SUCCESS)
         val handlers = mediatorK.getIntegrationEventsHandlers();
-        assert( handlers.size == 2)
-        val handler = handlers[TEST_INTEGRATIONEVENT_CLASS]
-        val handler2 = handlers[TEST_INTEGRATIONEVENT2_CLASS]
-        assert( handler == TestIntegrationEventHandler::class.java)
-        assert( handler2 == TestIntegrationEvent2Handler::class.java)
+        assert( handlers.size == 3)
+        assert( handlers[TEST_INTEGRATIONEVENT_CLASS] == TestIntegrationEventHandler::class.java)
+        assert( handlers[TEST_INTEGRATIONEVENT2_CLASS] == TestIntegrationEvent2Handler::class.java)
+        assert( handlers[FAKE_INTEGRATIONEVENT_CLASS] == FakeIntegrationEventHandler::class.java)
     }
 
     @Test
     fun duplicateConfig() {
-        assertThrows<IntegrationEventHandlerConfigurationException> {
+        assertThrows<MutipleIntegrationEventHandlerConfigurationException> {
             getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_DUPLICATE)
         }
     }

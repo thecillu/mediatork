@@ -3,6 +3,7 @@ package com.cillu.mediator.mappers
 import com.cillu.mediator.MediatorK
 import com.cillu.mediator.annotations.IntegrationEventHandler
 import com.cillu.mediator.exceptions.IntegrationEventHandlerConfigurationException
+import com.cillu.mediator.exceptions.MutipleIntegrationEventHandlerConfigurationException
 import com.cillu.mediator.registry.ServiceRegistry
 import mu.KotlinLogging
 
@@ -24,11 +25,10 @@ class IntegrationEventHandlersMapper(mediatorK: MediatorK, servicesRegistry: Ser
         val annotatedClasses: Set<Class<IntegrationEventHandler>> =
             mediatorK.reflections.getTypesAnnotatedWith(IntegrationEventHandler()) as Set<Class<IntegrationEventHandler>>
         for (annotatedClass in annotatedClasses) {
-            if (annotatedClass.genericInterfaces.isEmpty() || annotatedClass.genericInterfaces.size > 1) throw Exception(
-                "Annotated @IntegrationEventHandler Class must be implement IIntegrationEventHandler interface"
-            )
+            if (annotatedClass.genericInterfaces.isEmpty() || annotatedClass.genericInterfaces.size > 1)
+                throw IntegrationEventHandlerConfigurationException(annotatedClass.name)
             var integrationEventName = annotatedClass.genericInterfaces[0].typeName.substringAfter("<").substringBefore(">")
-            if (integrationEventHandlers.containsKey(integrationEventName)) throw IntegrationEventHandlerConfigurationException(integrationEventName)
+            if (integrationEventHandlers.containsKey(integrationEventName)) throw MutipleIntegrationEventHandlerConfigurationException(integrationEventName)
             //check registered services
             checkServices(annotatedClass, servicesRegistry)
             integrationEventHandlers[integrationEventName] = annotatedClass

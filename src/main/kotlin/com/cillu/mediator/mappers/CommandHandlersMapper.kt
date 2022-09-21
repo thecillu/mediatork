@@ -1,11 +1,7 @@
 package com.cillu.mediator.mappers
 
-import com.cillu.mediator.Event
 import com.cillu.mediator.annotations.CommandHandler
-import com.cillu.mediator.annotations.QueryHandler
 import com.cillu.mediator.exceptions.CommandHandlerConfigurationException
-import com.cillu.mediator.exceptions.MissingServiceException
-import com.cillu.mediator.exceptions.QueryHandlerConfigurationException
 import com.cillu.mediator.registry.ServiceRegistry
 import mu.KotlinLogging
 import org.reflections.Reflections
@@ -27,9 +23,8 @@ class CommandHandlersMapper(reflections: Reflections, servicesRegistry: ServiceR
         val annotatedClasses: Set<Class<CommandHandler>> =
             reflections.getTypesAnnotatedWith(CommandHandler()) as Set<Class<CommandHandler>>
         for (annotatedClass in annotatedClasses) {
-            if (annotatedClass.genericInterfaces.isEmpty() || annotatedClass.genericInterfaces.size > 1) throw Exception(
-                "Annotated @CommandHandler Class must be implement ICommandHandler interface"
-            )
+            if (annotatedClass.genericInterfaces.isEmpty() || annotatedClass.genericInterfaces.size > 1)
+                throw CommandHandlerConfigurationException(annotatedClass.name)
             var command = annotatedClass.genericInterfaces[0].typeName.substringAfter("<").substringBefore(">")
             if (commandHandlers.containsKey(command)) throw CommandHandlerConfigurationException(command)
             //check registered services

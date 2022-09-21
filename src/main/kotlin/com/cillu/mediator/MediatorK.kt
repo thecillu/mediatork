@@ -15,7 +15,7 @@ import com.cillu.mediator.mappers.IntegrationEventHandlersMapper
 import com.cillu.mediator.mappers.QueryHandlersMapper
 import com.cillu.mediator.queries.Query
 import com.cillu.mediator.registry.ServiceRegistry
-import com.cillu.mediator.servicebus.IServiceBus
+import com.cillu.mediator.messagebrokers.IMessageBroker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -24,8 +24,8 @@ import org.reflections.Reflections
 import org.reflections.util.ClasspathHelper
 import org.reflections.util.ConfigurationBuilder
 
-class MediatorK private constructor(mediatorPaths: List<String>, internal val serviceBus: IServiceBus,
-                                         private val servicesRegistry: ServiceRegistry): IMediator {
+class MediatorK private constructor(mediatorPaths: List<String>, internal val serviceBus: IMessageBroker,
+                                    private val servicesRegistry: ServiceRegistry): IMediator {
     private val logger = KotlinLogging.logger {}
     private var queryHandlersMapper: QueryHandlersMapper
     private var commandHandlersMapper: CommandHandlersMapper
@@ -34,7 +34,7 @@ class MediatorK private constructor(mediatorPaths: List<String>, internal val se
     internal var reflections: Reflections
 
     companion object {
-        fun create(mediatorPaths: List<String>, serviceBus: IServiceBus, servicesRegistry: ServiceRegistry = ServiceRegistry()): IMediator {
+        fun create(mediatorPaths: List<String>, serviceBus: IMessageBroker, servicesRegistry: ServiceRegistry = ServiceRegistry()): IMediator {
             return MediatorK(mediatorPaths, serviceBus, servicesRegistry);
         }
     }
@@ -156,6 +156,10 @@ class MediatorK private constructor(mediatorPaths: List<String>, internal val se
         return queryHandlersMapper.getHandlers();
     }
 
+    override fun getServiceRegistry(): ServiceRegistry {
+        return servicesRegistry;
+    }
+
     override fun getCommandsHandlers(): MutableMap<String, Class<CommandHandler>>{
         return commandHandlersMapper.getHandlers();
     }
@@ -171,5 +175,6 @@ class MediatorK private constructor(mediatorPaths: List<String>, internal val se
     private fun getDomainEventHandlers(domainEvent: DomainEvent): MutableSet<Class<DomainEventHandler>>? {
         return domainEventHandlersMapper.getHandlers()[domainEvent::class.java.name];
     }
+
 }
 

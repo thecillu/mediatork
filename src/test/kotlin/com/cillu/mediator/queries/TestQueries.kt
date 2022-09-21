@@ -3,7 +3,7 @@ package com.cillu.mediator.queries
 import com.cillu.mediator.TestBase
 import com.cillu.mediator.TestItem
 import com.cillu.mediator.exceptions.MissingServiceException
-import com.cillu.mediator.exceptions.QueryHandlerConfigurationException
+import com.cillu.mediator.exceptions.MutipleQueryHandlerConfigurationException
 import com.cillu.mediator.exceptions.QueryHandlerNotFoundException
 import com.cillu.mediator.queries.config.noservice.TestNoServiceQueryHandler
 import com.cillu.mediator.queries.config.success.TestQuery2Handler
@@ -40,7 +40,7 @@ class TestQueries: TestBase() {
 
     @Test
     fun duplicateConfig() {
-        assertThrows<QueryHandlerConfigurationException> {
+        assertThrows<MutipleQueryHandlerConfigurationException> {
             getMediatorK(QUERY_CONFIG_FILE_DUPLICATE)
         }
     }

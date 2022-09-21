@@ -1,5 +1,5 @@
 package com.cillu.mediator.exceptions
 
-class IntegrationEventHandlerConfigurationException(val command: String):
-    Exception("Found multiple CommandHandlers for the command ${command}\")") {
+class IntegrationEventHandlerConfigurationException(val handler: String):
+    Exception("Annotated @IntegrationEventHandler $handler Class must implement IIntegrationEventHandler interface") {
 }

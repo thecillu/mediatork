@@ -7,7 +7,10 @@ import com.cillu.mediator.annotations.QueryHandler
 import com.cillu.mediator.commands.Command
 import com.cillu.mediator.domain.Aggregate
 import com.cillu.mediator.integrationevents.IntegrationEvent
+import com.cillu.mediator.messagebrokers.IMessageBroker
 import com.cillu.mediator.queries.Query
+import com.cillu.mediator.registry.ServiceRegistry
+import mu.KotlinLogging
 
 interface IMediator {
 //    fun registerService(classType: Class<*>, objectInstance: Any)
@@ -20,4 +23,5 @@ interface IMediator {
     fun getDomainEventsHandlers(): MutableMap<String, MutableSet<Class<DomainEventHandler>>>
     fun getIntegrationEventsHandlers(): MutableMap<String, Class<IntegrationEventHandler>>
     fun getQueryHandlers(): MutableMap<String, Class<QueryHandler>>
+    fun getServiceRegistry(): ServiceRegistry
 }

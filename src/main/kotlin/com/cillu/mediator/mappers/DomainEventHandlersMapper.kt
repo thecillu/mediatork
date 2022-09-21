@@ -1,6 +1,7 @@
 package com.cillu.mediator.mappers
 
 import com.cillu.mediator.annotations.DomainEventHandler
+import com.cillu.mediator.exceptions.DomainEventHandlerConfigurationException
 import com.cillu.mediator.registry.ServiceRegistry
 import mu.KotlinLogging
 import org.reflections.Reflections
@@ -22,9 +23,8 @@ class DomainEventHandlersMapper(reflections: Reflections, servicesRegistry: Serv
         val annotatedClasses: Set<Class<DomainEventHandler>> =
             reflections.getTypesAnnotatedWith(DomainEventHandler()) as Set<Class<DomainEventHandler>>
         for (annotatedClass in annotatedClasses) {
-            if (annotatedClass.genericInterfaces.isEmpty() || annotatedClass.genericInterfaces.size > 1) throw Exception(
-                "Annotated @DomainEventHandler Class must be implement IDomainEventHandler interface"
-            )
+            if (annotatedClass.genericInterfaces.isEmpty() || annotatedClass.genericInterfaces.size > 1)
+                throw DomainEventHandlerConfigurationException(annotatedClass.name)
             var domainEvent = annotatedClass.genericInterfaces[0].typeName.substringAfter("<").substringBefore(">")
             //check registered services
             checkServices(annotatedClass, servicesRegistry)

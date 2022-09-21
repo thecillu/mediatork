@@ -1,9 +1,7 @@
 package com.cillu.mediator.mappers
 
-import com.cillu.mediator.Event
-import com.cillu.mediator.annotations.CommandHandler
 import com.cillu.mediator.annotations.QueryHandler
-import com.cillu.mediator.exceptions.CommandHandlerConfigurationException
+import com.cillu.mediator.exceptions.MutipleQueryHandlerConfigurationException
 import com.cillu.mediator.exceptions.QueryHandlerConfigurationException
 import com.cillu.mediator.registry.ServiceRegistry
 import mu.KotlinLogging
@@ -26,11 +24,10 @@ class QueryHandlersMapper(reflections: Reflections, servicesRegistry: ServiceReg
         val annotatedQueryClasses: Set<Class<QueryHandler>> =
             reflections.getTypesAnnotatedWith(QueryHandler()) as Set<Class<QueryHandler>>
         for (annotatedClass in annotatedQueryClasses) {
-            if (annotatedClass.genericInterfaces.isEmpty() || annotatedClass.genericInterfaces.size > 1) throw Exception(
-                "Annotated @QueryHandler Class must be implement IQueryHandler interface"
-            )
+            if (annotatedClass.genericInterfaces.isEmpty() || annotatedClass.genericInterfaces.size > 1)
+                throw QueryHandlerConfigurationException(annotatedClass.name)
             var query = annotatedClass.genericInterfaces[0].typeName.substringAfter("<").substringBefore(">")
-            if (queryHandlers.containsKey(query)) throw QueryHandlerConfigurationException(query)
+            if (queryHandlers.containsKey(query)) throw MutipleQueryHandlerConfigurationException(query)
             //check registered services
             checkServices(annotatedClass, servicesRegistry)
             queryHandlers[query] = annotatedClass

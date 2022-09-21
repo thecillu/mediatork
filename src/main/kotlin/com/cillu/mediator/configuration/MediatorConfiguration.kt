@@ -7,7 +7,8 @@ data class Mediator(
 
 data class ServiceBus(
     val name: String,
-    val rabbitMq: RabbitMq
+    val rabbitMq: RabbitMq?,
+    val awsSns: AwsSns?
 )
 
 data class RabbitMq(
@@ -16,6 +17,12 @@ data class RabbitMq(
     val queueName: String,
     val exchangeType: String,
     val consumerRetryLimit: Int
+)
+
+data class AwsSns(
+    val region: String,
+    val topicName: String,
+    val queueName: String
 )
 
 

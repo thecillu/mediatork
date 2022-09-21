@@ -1,0 +1,5 @@
+mediator_paths:
+  -  "com.cillu.mediator.integrationevents.config.success"
+mediator_servicebus:
+  name: local-service-bus
+

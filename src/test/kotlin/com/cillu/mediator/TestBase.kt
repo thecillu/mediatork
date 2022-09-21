@@ -2,7 +2,7 @@ package com.cillu.mediator
 
 import com.cillu.mediator.configuration.Mediator
 import com.cillu.mediator.registry.ServiceRegistry
-import com.cillu.mediator.servicebus.MessageBrokerFactory
+import com.cillu.mediator.messagebrokers.MessageBrokerFactory
 import com.cillu.mediator.services.*
 import com.sksamuel.hoplite.ConfigLoader
 
@@ -27,6 +27,7 @@ open class TestBase()
     internal var INTEGRATION_EVENTS_CONFIG_FILE_MISSING = "/mediatork-integration-missing.yml"
     internal var INTEGRATION_EVENTS_CONFIG_FILE_DUPLICATE = "/mediatork-integration-duplicate.yml"
     internal var INTEGRATION_EVENTS_CONFIG_FILE_SUCCESS_NOSERVICE = "/mediatork-integration-noservice.yml"
+    internal var INTEGRATION_EVENTS_CONFIG_FILE_LOCAL = "/mediatork-integration-local.yml"
 
     fun getMediatorK(configFile: String, registerService: Boolean = true): IMediator {
         val mediatorConfiguration = ConfigLoader().loadConfigOrThrow<Mediator>(configFile)

@@ -1,4 +1,4 @@
-package com.cillu.mediator.servicebus
+package com.cillu.mediator.messagebrokers
 
 import com.cillu.mediator.IMediator
 import com.cillu.mediator.integrationevents.IntegrationEvent
@@ -7,13 +7,13 @@ import com.rabbitmq.client.*
 import mu.KotlinLogging
 import java.io.IOException
 
-class RabbitMQServiceBus: IServiceBus {
+class RabbitMQMessageBroker: IMessageBroker {
     private var connectionUrl: String //= "amqp://guest:guest@localhost:5672/"
     private var exchangeName: String //= "platform_topic"
-    private var queueName: String = "microservice1"
-    private var dlqExchangeName: String = "platform_topic.dlq"
-    private var dlqQueueName: String = "microservice1.dlq"
-    private var exchangeType: String = "topic"
+    private var queueName: String //= "microservice1"
+    private var dlqExchangeName: String //= "platform_topic.dlq"
+    private var dlqQueueName: String //= "microservice1.dlq"
+    private var exchangeType: String //= "topic"
     private var consumerRetryLimit: Int = 10
     private var channel: Channel
     private var logger = KotlinLogging.logger {}
@@ -60,13 +60,11 @@ class RabbitMQServiceBus: IServiceBus {
             ) {
                 val deliveryTag = envelope!!.deliveryTag
                 val integrationEventName: String = envelope.routingKey ?: ""
-
                 try
                 {
                     val message = String(body!!)
                     logger.info("Received $integrationEventName with payload: $message")
-                    var integrationEvent = Gson().fromJson(message, Class.forName(integrationEventName))
-                    mediator.process(integrationEvent as IntegrationEvent)
+                    process(mediator, integrationEventName, message)
                     channel.basicAck(deliveryTag, false)
                     logger.info("ACK sent for $integrationEventName")
                 } catch (e:Exception){
@@ -79,6 +77,11 @@ class RabbitMQServiceBus: IServiceBus {
         logger.info("Created ServiceBus Consumer")
         logger.info("Listening for IntegrationEvent on queue $queueName....")
         channel.basicConsume(queueName, false, consumer);
+    }
+
+    private fun process( mediator: IMediator, integrationEventName:String, message: String){
+        var integrationEvent = Gson().fromJson(message, Class.forName(integrationEventName))
+        mediator.process(integrationEvent as IntegrationEvent)
     }
 
     override fun publish(integrationEvent: IntegrationEvent) {

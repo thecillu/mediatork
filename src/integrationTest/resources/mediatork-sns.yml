@@ -1,0 +1,13 @@
+mediator_paths:
+  -  "com.cillu.mediator.integrationevents.config"
+mediator_servicebus:
+  name: awsSns
+  awsSns:
+    region: eu-south-1
+    topicName: platform_topic
+    queueName: microservice1
+
+logging:
+  level:
+    root: INFO
+
