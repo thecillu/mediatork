@@ -1,6 +1,5 @@
-package com.cillu.mediator.messagebrokers
+package com.cillu.mediator.messagebrokers.aws
 
-import aws.sdk.kotlin.runtime.auth.credentials.ProfileCredentialsProvider
 import aws.sdk.kotlin.services.sns.SnsClient
 import aws.sdk.kotlin.services.sns.model.*
 import aws.sdk.kotlin.services.sns.model.MessageAttributeValue
@@ -8,6 +7,7 @@ import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.*
 import com.cillu.mediator.IMediator
 import com.cillu.mediator.integrationevents.IntegrationEvent
+import com.cillu.mediator.messagebrokers.IMessageBroker
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -16,11 +16,11 @@ import java.util.concurrent.Executors
 
 
 class AwsSnsMessageBroker : IMessageBroker {
-    private var consumerRetryLimit: Int = 10
-    private var logger = KotlinLogging.logger {}
-    private var queueName: String
-    private var topicName: String
-    private var region: String
+    private val consumerRetryLimit: Int = 10
+    private val logger = KotlinLogging.logger {}
+    private val queueName: String
+    private val topicName: String
+    private val region: String
     private lateinit var queueUrlVal: String
     private lateinit var deadLetterQueueUrlVal: String
     private lateinit var topicArnVal: String
@@ -32,8 +32,11 @@ class AwsSnsMessageBroker : IMessageBroker {
     private val maxConsumers: Int
     private val maxMessages: Int
     private val waitTimeSeconds: Int
-    private var retryAfterSeconds: Int
-    private var workerPool: ExecutorService
+    private val retryAfterSeconds: Int
+    private val workerPool: ExecutorService
+    private var integrationEventNames = mutableListOf<String>();
+    private var processTimeout: String
+    var stopConsumers: Boolean
 
     internal constructor(
         regionVal: String,
@@ -42,7 +45,8 @@ class AwsSnsMessageBroker : IMessageBroker {
         maxConsumers: Int,
         maxMessages: Int,
         waitTimeSeconds: Int,
-        retryAfterSeconds: Int
+        retryAfterSeconds: Int,
+        processTimeout: String
     ) {
         this.queueName = queueName
         this.topicName = topicName
@@ -51,15 +55,17 @@ class AwsSnsMessageBroker : IMessageBroker {
         this.maxConsumers = maxConsumers
         this.maxMessages = maxMessages
         this.waitTimeSeconds = waitTimeSeconds
+        this.processTimeout = processTimeout
+        this.stopConsumers = false
         workerPool = Executors.newFixedThreadPool(maxConsumers)
         runBlocking {
             snsClient = SnsClient { region = regionVal }
             sqsClient = SqsClient { region = regionVal }
-            createTopicAndQueue(topicName, queueName)
+            configure(topicName, queueName)
         }
     }
 
-    fun createTopicAndQueue(
+    private fun configure(
         topicNameVal: String,
         queueNameVal: String
     ) {
@@ -70,6 +76,7 @@ class AwsSnsMessageBroker : IMessageBroker {
     }
 
     private fun subscribe(queueNameVal: String) {
+        logger.info("Subscribing Queue $queueNameVal to the Topic $topicArnVal")
         runBlocking {
             val subscribeRequest = SubscribeRequest {
                 protocol = "sqs"
@@ -77,11 +84,12 @@ class AwsSnsMessageBroker : IMessageBroker {
                 topicArn = topicArnVal
                 returnSubscriptionArn = true
             }
-            logger.info("Subscribing Queue $queueNameVal to the Topic $topicArnVal")
             val result = snsClient.subscribe(subscribeRequest)
             subscriptionArnVal = result.subscriptionArn!!
-            logger.info("Subscribed Queue $queueNameVal to the Topic $topicArnVal")
-            logger.info("Setting SQS Policies...")
+        }
+        logger.info("Subscribed Queue $queueNameVal to the Topic $topicArnVal")
+        logger.info("Setting SQS Policies for Queue $queueNameVal and Topic $topicArnVal")
+        runBlocking {
             val policyDocument = AwsSqsPolicy.getPolicyDocument(queueArnVal, topicArnVal);
             val redrivePolicyDocument = AwsSqsPolicy.getRedrivePolicy(deadLetterQueueArnVal, consumerRetryLimit);
             val setQueueAttributesRequest = SetQueueAttributesRequest {
@@ -90,18 +98,20 @@ class AwsSnsMessageBroker : IMessageBroker {
                     QueueAttributeName.Policy.value to policyDocument,
                     QueueAttributeName.RedrivePolicy.value to redrivePolicyDocument
                 )
-                QueueAttributeName.RedriveAllowPolicy
             }
             sqsClient.setQueueAttributes(setQueueAttributesRequest)
-            logger.info("Set SQS Policies")
         }
+        logger.info("Set SQS Policies for Queue $queueNameVal and Topic $topicArnVal")
     }
 
     private fun createSourceQueue(queueNameVal: String) {
         logger.info("Creating Queue $queueNameVal on Region $region")
+
+        val queueAttributes  = mapOf( QueueAttributeName.VisibilityTimeout.value to processTimeout)
         runBlocking {
             val createQueueRequest = CreateQueueRequest {
                 queueName = queueNameVal
+                attributes = queueAttributes
             }
             sqsClient.createQueue(createQueueRequest)
         }
@@ -153,6 +163,7 @@ class AwsSnsMessageBroker : IMessageBroker {
         runBlocking {
             val createTopicRequest = CreateTopicRequest {
                 name = topicNameVal
+
             }
             val result = snsClient.createTopic(createTopicRequest)
             topicArnVal = result.topicArn.toString()
@@ -161,17 +172,8 @@ class AwsSnsMessageBroker : IMessageBroker {
     }
 
     override fun bind(integrationEventName: String) {
-        logger.info("Binding routingKey = $integrationEventName for Queue $queueName and sns subscription $subscriptionArnVal")
-        val policy = AwsSnsPolicy.getFilterPolicy(listOf(integrationEventName))
-        runBlocking {
-            val setSubscriptionAttributesRequest = SetSubscriptionAttributesRequest {
-                attributeName = "FilterPolicy"
-                attributeValue = policy
-                subscriptionArn = subscriptionArnVal
-            }
-            snsClient.setSubscriptionAttributes(setSubscriptionAttributesRequest)
-        }
-        logger.info("Bound routingKey = $integrationEventName for Queue $queueName and sns subscription $subscriptionArnVal")
+        val simpleName = integrationEventName.substringAfterLast(".")
+        integrationEventNames.add(simpleName);
     }
 
     override fun consume(mediator: IMediator) {
@@ -179,6 +181,7 @@ class AwsSnsMessageBroker : IMessageBroker {
         for (i in 1..maxConsumers) {
             workerPool.submit(
                 AwsSqsConsumer(
+                    this,
                     mediator,
                     sqsClient,
                     queueUrlVal,
@@ -193,12 +196,12 @@ class AwsSnsMessageBroker : IMessageBroker {
 
     override fun publish(integrationEvent: IntegrationEvent) {
         runBlocking {
-            logger.info("Publishing  ${integrationEvent::class.java.name}  on $topicName")
+            logger.info("Publishing  ${integrationEvent::class.java.name} on $topicName")
             var json = Gson().toJson(integrationEvent)
             val attributes: MutableMap<String, MessageAttributeValue> = mutableMapOf()
-            attributes["event"] = MessageAttributeValue {
+            attributes["routingKey"] = MessageAttributeValue {
                 dataType = "String"
-                stringValue = integrationEvent::class.java.name
+                stringValue = integrationEvent::class.simpleName
             }
             var publishRequest = PublishRequest {
                 topicArn = topicArnVal
@@ -206,9 +209,8 @@ class AwsSnsMessageBroker : IMessageBroker {
                 message = json
                 messageAttributes = attributes
             }
-            val result: PublishResponse
-            result = snsClient.publish(publishRequest)
-            logger.info("Published  ${integrationEvent::class.java.name}  on $topicName [messageId:${result.messageId}]")
+            val result: PublishResponse = snsClient.publish(publishRequest)
+            logger.info("Published  ${integrationEvent::class.java.name} on $topicName [messageId:${result.messageId}]")
         }
     }
 }

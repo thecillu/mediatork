@@ -1,14 +1,16 @@
 package com.cillu.mediator.integrationevents.rabbitmq
 
 import com.cillu.mediator.TestBase
-import com.cillu.mediator.integrationevents.config.FakeIntegrationEventHandler
+import com.cillu.mediator.integrationevents.config.single.FakeIntegrationEventHandler
 import com.cillu.mediator.integrationevents.domain.FakeIntegrationEvent
 import com.cillu.mediator.services.MemoryRepository
 import org.junit.jupiter.api.Test
 
 class TestIntegrationEvents(): TestBase() {
 
-    val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_RABBITMQ)
+    val pair = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_RABBITMQ)
+    val mediatorK = pair.first
+    val messageBroker = pair.second
 
     @Test
     fun successConfig() {

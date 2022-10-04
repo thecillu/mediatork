@@ -1,4 +1,4 @@
-package com.cillu.mediator.integrationevents.config
+package com.cillu.mediator.integrationevents.config.single
 
 import com.cillu.mediator.annotations.IntegrationEventHandler
 import com.cillu.mediator.integrationevents.IIntegrationEventHandler

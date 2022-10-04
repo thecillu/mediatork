@@ -1,43 +1,60 @@
-package com.cillu.mediator.messagebrokers
+package com.cillu.mediator.messagebrokers.rabbitmq
 
 import com.cillu.mediator.IMediator
 import com.cillu.mediator.integrationevents.IntegrationEvent
+import com.cillu.mediator.messagebrokers.IMessageBroker
 import com.google.gson.Gson
 import com.rabbitmq.client.*
 import mu.KotlinLogging
 import java.io.IOException
 
+
+
 class RabbitMQMessageBroker : IMessageBroker {
-    private var connectionUrl: String //= "amqp://guest:guest@localhost:5672/"
+    private var host: String
+    private var port: Int
+    private var username: String
+    private var password: String
+    private var useSslProtocol: Boolean
     private var exchangeName: String //= "platform_topic"
     private var queueName: String //= "microservice1"
     private var dlqExchangeName: String //= "platform_topic.dlq"
     private var dlqQueueName: String //= "microservice1.dlq"
-    private var exchangeType: String //= "topic"
-    private var consumerRetryLimit: Int = 10
+    private var consumerRetryLimit: Int
     private var channel: Channel
     private var logger = KotlinLogging.logger {}
 
+    private val EXCHANGE_TYPE = "topic"
+
     internal constructor(
-        connectionUrl: String, exchangeName: String, queueName: String,
-        exchangeType: String, consumerRetryLimit: Int
+        host: String, port: Int,  username: String,  password: String,
+        useSslProtocol: Boolean, exchangeName: String, queueName: String,
+        consumerRetryLimit: Int
     ) {
-        this.connectionUrl = connectionUrl
+        this.host = host
+        this.port = port
+        this.username = username
+        this.password = password
+        this.useSslProtocol = useSslProtocol
         this.exchangeName = exchangeName
         this.queueName = queueName
         this.dlqExchangeName = "$exchangeName.dlq"
         this.dlqQueueName = "$queueName.dlq"
-        this.exchangeType = exchangeType
         this.consumerRetryLimit = consumerRetryLimit
         val factory = ConnectionFactory()
-        val connection = factory.newConnection(connectionUrl)
+        factory.host = this.host;
+        factory.port = 5672;
+        factory.username = this.username;
+        factory.password = this.password;
+        if (this.useSslProtocol) factory.useSslProtocol()
+        val connection = factory.newConnection()
         channel = connection.createChannel()
-        channel.exchangeDeclare(exchangeName, exchangeType, true);
-        channel.exchangeDeclare(dlqExchangeName, exchangeType, true);
+        channel.exchangeDeclare(exchangeName, EXCHANGE_TYPE, true);
+        channel.exchangeDeclare(dlqExchangeName, EXCHANGE_TYPE, true);
         var args: HashMap<String, Any> = HashMap()
         args["x-dead-letter-exchange"] = dlqExchangeName;
         args["x-queue-type"] = "quorum";
-        args["x-delivery-limit"] = consumerRetryLimit;
+        args["delivery-limit"] = consumerRetryLimit;
         channel.queueDeclare(queueName, true, false, false, args)
         channel.queueDeclare(dlqQueueName, true, false, false, null)
     }
@@ -93,6 +110,4 @@ class RabbitMQMessageBroker : IMessageBroker {
             json.toByteArray(),
         )
     }
-
-
 }

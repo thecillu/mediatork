@@ -1,27 +1,35 @@
 package com.cillu.mediator.messagebrokers
 
+import com.cillu.mediator.messagebrokers.aws.AwsSnsMessageBroker
+import com.cillu.mediator.messagebrokers.local.LocalMessageBroker
+import com.cillu.mediator.messagebrokers.rabbitmq.RabbitMQMessageBroker
+
 class MessageBrokerFactory private constructor() {
 
     companion object {
-        fun getMessageBroker(mediatorConfiguration: com.cillu.mediator.configuration.Mediator): IMessageBroker {
-            return when (mediatorConfiguration.mediatorServicebus.name) {
-                "local-service-bus" -> LocalMessageBroker()
-                "azure-service-bus" -> throw NotImplementedError()
+        fun getMessageBroker(mediatorConfiguration: com.cillu.mediator.configuration.MediatorConfig): IMessageBroker {
+            return when (mediatorConfiguration.mediator.messageBroker.name) {
+                "localMessageBroker" -> LocalMessageBroker()
+                "azureServiceBus" -> throw NotImplementedError()
                 "awsSns" -> AwsSnsMessageBroker(
-                    mediatorConfiguration.mediatorServicebus.awsSns!!.region,
-                    mediatorConfiguration.mediatorServicebus.awsSns!!.topicName,
-                    mediatorConfiguration.mediatorServicebus.awsSns!!.queueName,
-                    mediatorConfiguration.mediatorServicebus.awsSns!!.consumer.maxConsumers,
-                    mediatorConfiguration.mediatorServicebus.awsSns!!.consumer.maxMessages,
-                    mediatorConfiguration.mediatorServicebus.awsSns!!.consumer.waitTimeSeconds,
-                    mediatorConfiguration.mediatorServicebus.awsSns!!.consumer.retryAfterSeconds
+                    mediatorConfiguration.mediator.messageBroker.awsSns!!.region,
+                    mediatorConfiguration.mediator.messageBroker.awsSns!!.topicName,
+                    mediatorConfiguration.mediator.messageBroker.awsSns!!.queueName,
+                    mediatorConfiguration.mediator.messageBroker.awsSns!!.consumer.maxConsumers,
+                    mediatorConfiguration.mediator.messageBroker.awsSns!!.consumer.maxMessages,
+                    mediatorConfiguration.mediator.messageBroker.awsSns!!.consumer.waitTimeSeconds,
+                    mediatorConfiguration.mediator.messageBroker.awsSns!!.consumer.retryAfterSeconds,
+                    mediatorConfiguration.mediator.messageBroker.awsSns!!.consumer.processTimeoutSeconds.toString()
                 )
                 "rabbitMq" -> RabbitMQMessageBroker(
-                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.connectionUrl,
-                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.exchangeName,
-                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.queueName,
-                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.exchangeType,
-                    mediatorConfiguration.mediatorServicebus.rabbitMq!!.consumerRetryLimit
+                    mediatorConfiguration.mediator.messageBroker.rabbitMq!!.host,
+                    mediatorConfiguration.mediator.messageBroker.rabbitMq!!.port,
+                    mediatorConfiguration.mediator.messageBroker.rabbitMq!!.username,
+                    mediatorConfiguration.mediator.messageBroker.rabbitMq!!.password,
+                    mediatorConfiguration.mediator.messageBroker.rabbitMq!!.useSslProtocol,
+                    mediatorConfiguration.mediator.messageBroker.rabbitMq!!.exchangeName,
+                    mediatorConfiguration.mediator.messageBroker.rabbitMq!!.queueName,
+                    mediatorConfiguration.mediator.messageBroker.rabbitMq!!.consumerRetryLimit
                 )
                 else -> throw NotImplementedError()
             }

@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.6.21"
     id("maven-publish")
+    jacoco
 }
 
 group = "com.cillu"
@@ -70,10 +71,27 @@ val integrationTest = task<Test>("integrationTest") {
 
     testClassesDirs = sourceSets["integrationTest"].output.classesDirs
     classpath = sourceSets["integrationTest"].runtimeClasspath
-    mustRunAfter("test")
 }
 
-tasks.check {
-    dependsOn(integrationTest)
+
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory.set(layout.buildDirectory.dir("customJacocoReportDir"))
 }
 
+tasks.jacocoTestReport {
+
+    executionData.setFrom(fileTree(buildDir).include("/jacoco/*.exec"))
+
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+    dependsOn("test", "integrationTest")
+}
+
+
+
+tasks["test"].finalizedBy("integrationTest")
+tasks["integrationTest"].finalizedBy("jacocoTestReport")

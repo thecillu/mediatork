@@ -1,7 +1,8 @@
-package com.cillu.mediator.messagebrokers
+package com.cillu.mediator.messagebrokers.local
 
 import com.cillu.mediator.IMediator
 import com.cillu.mediator.integrationevents.IntegrationEvent
+import com.cillu.mediator.messagebrokers.IMessageBroker
 import mu.KotlinLogging
 
 

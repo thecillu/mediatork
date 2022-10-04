@@ -1,11 +1,13 @@
-package com.cillu.mediator.messagebrokers
+package com.cillu.mediator.messagebrokers.aws
 
+import aws.sdk.kotlin.services.sns.model.MessageAttributeValue
 import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.ChangeMessageVisibilityRequest
 import aws.sdk.kotlin.services.sqs.model.DeleteMessageRequest
 import aws.sdk.kotlin.services.sqs.model.Message
 import aws.sdk.kotlin.services.sqs.model.ReceiveMessageRequest
 import com.cillu.mediator.IMediator
+import com.cillu.mediator.exceptions.IntegrationEventHandlerNotFoundException
 import com.cillu.mediator.integrationevents.IntegrationEvent
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
@@ -20,8 +22,10 @@ class AwsSqsConsumer : Runnable {
     var maxMessages: Int
     var waitTimeSeconds: Int
     var retryAfterSeconds: Int
+    var awsSnsMessageBroker: AwsSnsMessageBroker
 
     constructor(
+        awsSnsMessageBroker: AwsSnsMessageBroker,
         mediator: IMediator,
         sqsClient: SqsClient,
         queueUrlVal: String,
@@ -35,6 +39,7 @@ class AwsSqsConsumer : Runnable {
         this.maxMessages = maxMessages
         this.waitTimeSeconds = waitTimeSeconds
         this.retryAfterSeconds = retryAfterSeconds
+        this.awsSnsMessageBroker = awsSnsMessageBroker
     }
 
     public override fun run() {
@@ -44,61 +49,69 @@ class AwsSqsConsumer : Runnable {
             maxNumberOfMessages = maxMessages
             waitTimeSeconds = waitTimeSeconds
         }
-        while (true) {
+        while (!awsSnsMessageBroker.stopConsumers) {
+            //logger.info("Checking for IntegrationEvent on queue $queueUrlVal")
             try {
                 runBlocking {
                     logger.debug("Polling $queueUrlVal...")
                     val response = sqsClient.receiveMessage(receiveMessageRequest)
                     response.messages?.forEach { message ->
+                        var integrationEventName = ""
                         try {
                             val snsNotification = Gson().fromJson(message.body, SnsNotification::class.java)
-                            val integrationEventName = snsNotification.Subject
+                            integrationEventName = snsNotification.Subject
                             val payload = snsNotification.Message
                             logger.info("Received ${integrationEventName} [messageId=${message.messageId}]")
-                            launch {
-                                try {
-                                    logger.info("Consuming ${integrationEventName} [messageId=${message.messageId}]")
-                                    process(mediator, integrationEventName, payload)
-                                    logger.info("Consumed ${integrationEventName} [messageId=${message.messageId}]")
-                                    deleteMessage(message)
-                                } catch (e: Throwable) {
-                                    releaseMessage(message)
-                                }
+                            logger.info("Consuming ${integrationEventName} [messageId=${message.messageId}]")
+                            process(mediator, integrationEventName, payload)
+                            logger.info("Consumed ${integrationEventName} [messageId=${message.messageId}]")
+                            deleteMessage(message)
+                        } catch (e: IntegrationEventHandlerNotFoundException) {
+                            try {
+                                logger.info("Discarding event $integrationEventName:${message.messageId}: $e")
+                                deleteMessage(message);
+                            } catch (e: Throwable) {
+                                logger.error("Exception deleting event with messageId=${message.messageId}: $e")
                             }
-                        } catch (e: Throwable) {
+                        } catch (e2: Throwable) {
                             try {
                                 releaseMessage(message)
                             } catch (e: Throwable) {
-                                logger.info("Catched exception releasing event with messageId=${message.messageId}: $e.message")
+                                logger.error("Exception releasing event with messageId=${message.messageId}: $e")
                             }
                         }
                     }
                 }
             } catch (e: Throwable) {
-                logger.error("Catched general exception during message consuming: ${e.message}")
+                logger.error("General exception during message consuming: ${e.message}")
             }
         }
+        logger.info("Stopped Consumers for queue $queueUrlVal")
     }
 
     private suspend fun deleteMessage(message: Message) {
-        logger.info("Deleting Message ${message.messageId}")
-        val deleteMessageRequest = DeleteMessageRequest {
-            queueUrl = queueUrlVal
-            receiptHandle = message.receiptHandle
+        runBlocking {
+            logger.info("Deleting Message [messageId=${message.messageId}]")
+            val deleteMessageRequest = DeleteMessageRequest {
+                queueUrl = queueUrlVal
+                receiptHandle = message.receiptHandle
+            }
+            sqsClient.deleteMessage(deleteMessageRequest)
+            logger.info("Deleted Message [messageId=${message.messageId}]")
         }
-        sqsClient.deleteMessage(deleteMessageRequest)
-        logger.info("Deleted Message ${message.messageId}")
     }
 
     private suspend fun releaseMessage(message: Message) {
-        logger.info("Releasing messageId=${message.messageId}")
-        val changeMessageVisibilityRequest = ChangeMessageVisibilityRequest {
-            queueUrl = queueUrlVal
-            receiptHandle = message.receiptHandle
-            visibilityTimeout = retryAfterSeconds
+        runBlocking {
+            logger.info("Releasing Message [messageId=${message.messageId}]")
+            val changeMessageVisibilityRequest = ChangeMessageVisibilityRequest {
+                queueUrl = queueUrlVal
+                receiptHandle = message.receiptHandle
+                visibilityTimeout = retryAfterSeconds
+            }
+            sqsClient.changeMessageVisibility(changeMessageVisibilityRequest)
+            logger.info("Released Message [messageId=${message.messageId}]")
         }
-        sqsClient.changeMessageVisibility(changeMessageVisibilityRequest)
-        logger.info("Released messageId=${message.messageId}")
     }
 
     private fun process(mediator: IMediator, integrationEventName: String, message: String) {

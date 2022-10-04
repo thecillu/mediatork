@@ -1,5 +1,5 @@
 mediator:
   paths:
-    -  "com.cillu.mediator.queries.config.missing"
+    -  "com.cillu.mediator.queries.config.exception"
   messageBroker:
     name: localMessageBroker

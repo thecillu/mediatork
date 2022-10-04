@@ -1,9 +1,9 @@
-package com.cillu.mediator.messagebrokers
+package com.cillu.mediator.messagebrokers.aws
 
 class AwsSnsPolicy {
     companion object {
         public fun getFilterPolicy(integrationEventNames: List<String>): String {
-            var filterPolicy = "{\"event\": [";
+            var filterPolicy = "{\"routingKey\": [";
             integrationEventNames.forEach {
                 filterPolicy = filterPolicy.plus("\"").plus(it).plus("\"").plus(",")
             }

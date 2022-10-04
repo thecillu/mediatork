@@ -1,4 +1,4 @@
-package com.cillu.mediator.messagebrokers
+package com.cillu.mediator.messagebrokers.aws
 
 class AwsSqsPolicy {
 

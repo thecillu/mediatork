@@ -1,23 +1,28 @@
 package com.cillu.mediator.configuration
 
-import java.util.concurrent.ExecutorService
-
-data class Mediator(
-    val mediatorPaths: List<String>,
-    val mediatorServicebus: ServiceBus
+data class MediatorConfig(
+    val mediator: Mediator,
 )
 
-data class ServiceBus(
+data class Mediator(
+    val paths: List<String>,
+    val messageBroker: MessageBroker
+)
+
+data class MessageBroker(
     val name: String,
     val rabbitMq: RabbitMq?,
     val awsSns: AwsSns?
 )
 
 data class RabbitMq(
-    val connectionUrl: String,
+    val host: String,
+    val port: Int,
+    val username: String,
+    val password: String,
+    val useSslProtocol: Boolean,
     val exchangeName: String,
     val queueName: String,
-    val exchangeType: String,
     val consumerRetryLimit: Int
 )
 
@@ -32,7 +37,8 @@ data class Consumer(
     val maxConsumers: Int,
     val maxMessages: Int,
     val waitTimeSeconds: Int,
-    val retryAfterSeconds: Int
+    val retryAfterSeconds: Int,
+    val processTimeoutSeconds: Int
 )
 
 

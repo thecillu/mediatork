@@ -4,7 +4,6 @@ package com.cillu.mediator.domainevents.config.missing
 import com.cillu.mediator.annotations.DomainEventHandler
 import com.cillu.mediator.domainevents.domain.TestDomainEvent
 import com.cillu.mediator.domainevents.IDomainEventHandler
-import com.cillu.mediator.services.ITestService
 import com.cillu.mediator.services.MissingService
 import mu.KotlinLogging
 
