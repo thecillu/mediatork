@@ -7,9 +7,7 @@ import com.cillu.mediator.commands.config.success.TestCreateCommandHandler
 import com.cillu.mediator.commands.config.success.TestCreateCommand2Handler
 import com.cillu.mediator.commands.domain.TestCreateCommand
 import com.cillu.mediator.commands.domain.TestNoServiceCommand
-import com.cillu.mediator.exceptions.CommandHandlerConfigurationException
-import com.cillu.mediator.exceptions.CommandHandlerNotFoundException
-import com.cillu.mediator.exceptions.MissingServiceException
+import com.cillu.mediator.exceptions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
@@ -26,8 +24,8 @@ class TestCommands: TestBase(){
         val mediatorK = getMediatorK(COMMAND_CONFIG_FILE_SUCCESS)
         val handlers = mediatorK.getCommandsHandlers();
         assert( handlers.size == 2)
-        assert( handlers[TEST_COMMAND_CLASS] == TestCreateCommandHandler::class.java)
-        assert( handlers[TEST_COMMAND2_CLASS] ==  TestCreateCommand2Handler::class.java)
+        assert( handlers[TEST_COMMAND_CLASS]!!::class.java == TestCreateCommandHandler::class.java)
+        assert( handlers[TEST_COMMAND2_CLASS]!!::class.java ==  TestCreateCommand2Handler::class.java)
     }
 
     @Test
@@ -41,7 +39,7 @@ class TestCommands: TestBase(){
 
      @Test
      fun duplicateConfig() {
-         assertThrows<CommandHandlerConfigurationException> {
+         assertThrows<MultipleCommandHandlerConfigurationException> {
              getMediatorK(COMMAND_CONFIG_FILE_DUPLICATE)
          }
      }
@@ -55,20 +53,17 @@ class TestCommands: TestBase(){
 
     @Test
     fun missingService() {
-        assertThrows<MissingServiceException> {
+        assertThrows<MissingComponentException> {
             val mediatorK = getMediatorK(COMMAND_CONFIG_FILE_MISSING_SERVICE)
             //mediatorK.send(TestCreateCommand( UUID.randomUUID(), "TestCommand"))
         }
     }
 
-    
     @Test
-    fun successConfigNoService() {
-        val mediatorK = getMediatorK(COMMAND_CONFIG_FILE_SUCCESS_NOSERVICE, false)
-        val handlers = mediatorK.getCommandsHandlers();
-        assert( handlers.size == 1)
-        assert( handlers[TEST_COMMAND_NOSERVICE_CLASS] == TestNoServiceCommandHandler::class.java)
+    fun wrongConstructor() {
+        assertThrows<NoEmptyHandlerConstructor> {
+            val mediatorK = getMediatorK(COMMAND_CONFIG_FILE_WRONG_CONSTRUCTOR)
+            //mediatorK.send(TestCreateCommand( UUID.randomUUID(), "TestCommand"))
+        }
     }
-
-
 }

@@ -6,7 +6,7 @@ import com.cillu.mediator.messagebrokers.IMessageBroker
 import mu.KotlinLogging
 
 
-class LocalMessageBroker() : IMessageBroker {
+class InMemoryMessageBroker() : IMessageBroker {
 
     var integrationEvents: MutableList<IntegrationEvent> = mutableListOf()
     var bindedIntegrationEvents: MutableList<String> = mutableListOf()

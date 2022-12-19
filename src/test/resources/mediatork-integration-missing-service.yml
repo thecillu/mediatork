@@ -1,7 +1,6 @@
 mediator:
   paths:
     - "com.cillu.mediator.integrationevents.config.missing"
-  messageBroker:
-    name: localMessageBroker
+    - "com.cillu.mediator.services"
 
 

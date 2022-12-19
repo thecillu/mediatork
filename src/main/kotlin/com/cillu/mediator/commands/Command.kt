@@ -4,6 +4,4 @@ import com.cillu.mediator.Event
 import java.util.*
 
 
-open class Command(): Event()
-
-
+open class Command(idEvent: UUID): Event(idEvent)

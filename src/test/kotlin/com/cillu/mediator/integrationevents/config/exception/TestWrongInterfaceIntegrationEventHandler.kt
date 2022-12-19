@@ -7,7 +7,7 @@ import com.cillu.mediator.services.MissingService
 import mu.KotlinLogging
 
 @IntegrationEventHandler
-class TestWrongInterfaceIntegrationEventHandler(): Exception() {
+class TestWrongInterfaceIntegrationEventHandler: Exception() {
 
     private val logger = KotlinLogging.logger {}
 

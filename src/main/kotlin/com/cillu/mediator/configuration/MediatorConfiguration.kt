@@ -6,7 +6,7 @@ data class MediatorConfig(
 
 data class Mediator(
     val paths: List<String>,
-    val messageBroker: MessageBroker
+    val messageBroker: MessageBroker?
 )
 
 data class MessageBroker(

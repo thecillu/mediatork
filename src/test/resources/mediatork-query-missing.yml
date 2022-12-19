@@ -1,6 +1,5 @@
 mediator:
   paths:
     - "com.cillu.mediator.queries.domain"
-  messageBroker:
-    name: localMessageBroker
+    - "com.cillu.mediator.services"
 

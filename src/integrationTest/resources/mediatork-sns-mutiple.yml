@@ -1,7 +1,8 @@
 mediator:
   paths:
-    -  "com.cillu.mediator.integrationevents.config.single"
-    -  "com.cillu.mediator.integrationevents.config.multiple"
+    - "com.cillu.mediator.integrationevents.config.single"
+    - "com.cillu.mediator.integrationevents.config.multiple"
+    - "com.cillu.mediator.services"
   messageBroker:
     name: awsSns
     awsSns:

@@ -1,20 +1,24 @@
-package com.cillu.mediator.domainevents.config.exception
+package com.cillu.mediator.domainevents.config.wrongconstructor
 
 
 import com.cillu.mediator.annotations.DomainEventHandler
+import com.cillu.mediator.annotations.Inject
 import com.cillu.mediator.domainevents.domain.TestDomainEvent
 import com.cillu.mediator.domainevents.IDomainEventHandler
 import com.cillu.mediator.services.ITestService
-import com.cillu.mediator.services.MissingService
 import mu.KotlinLogging
 
 @DomainEventHandler
-class TestWrongInterfaceDomainEventHandler() :  Exception() {
+class TestDomainEventHandler(var wrongParam: Any): IDomainEventHandler<TestDomainEvent>, Exception() {
 
     private val logger = KotlinLogging.logger {}
 
-    fun handle( domainEvent: TestDomainEvent) {
+    @Inject
+    lateinit var testService: ITestService
+
+    override fun handle( domainEvent: TestDomainEvent) {
         logger.info("Executing TestDomainEvent with ${domainEvent.item.name}")
+        testService.sayhello()
         logger.info("Executed TestDomainEvent with ${domainEvent.item.name}")
     }
 }

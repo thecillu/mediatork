@@ -2,13 +2,17 @@ package com.cillu.mediator.domainevents.config.missing
 
 
 import com.cillu.mediator.annotations.DomainEventHandler
+import com.cillu.mediator.annotations.Inject
 import com.cillu.mediator.domainevents.domain.TestDomainEvent
 import com.cillu.mediator.domainevents.IDomainEventHandler
 import com.cillu.mediator.services.MissingService
 import mu.KotlinLogging
 
 @DomainEventHandler
-class TestMissingServiceDomainEventHandler(var missingService: MissingService) : IDomainEventHandler<TestDomainEvent>, Exception() {
+class TestMissingServiceDomainEventHandler() : IDomainEventHandler<TestDomainEvent>, Exception() {
+
+    @Inject
+    lateinit var missingService: MissingService
 
     private val logger = KotlinLogging.logger {}
 

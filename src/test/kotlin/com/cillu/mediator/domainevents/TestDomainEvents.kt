@@ -10,7 +10,9 @@ import com.cillu.mediator.domainevents.config.success.TestDomainEventHandler2
 import com.cillu.mediator.domainevents.config.success.TestDomainEventHandler
 import com.cillu.mediator.domainevents.domain.TestDomainEvent
 import com.cillu.mediator.exceptions.DomainEventHandlerConfigurationException
+import com.cillu.mediator.exceptions.MissingComponentException
 import com.cillu.mediator.exceptions.MissingServiceException
+import com.cillu.mediator.exceptions.NoEmptyHandlerConstructor
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -29,21 +31,11 @@ class TestDomainEvents() : TestBase() {
         val handler = handlers[TEST_DOMAINEVENT_CLASS]
         val handler2 = handlers[TEST_DOMAINEVENT2_CLASS]
         assert(handler!!.size == 2)
-        assert(handler.contains<Class<out Any>>(TestDomainEventHandler::class.java))
-        assert(handler.contains<Class<out Any>>(TestDomainEventHandler2::class.java))
         assert(handler2!!.size == 1)
-        assert(handler2.contains<Class<out Any>>(TestDomainEvent2Handler::class.java))
+        assert((handler.filter { it.javaClass == TestDomainEventHandler::class.java }.size == 1))
+        assert((handler.filter { it.javaClass == TestDomainEventHandler2::class.java }.size == 1))
+        assert((handler2.filter { it.javaClass == TestDomainEvent2Handler::class.java }.size == 1))
     }
-
-    @Test
-    fun fullPath() {
-        assertThrows<MissingServiceException> {
-            val mediatorK = getMediatorK(FULL_PATH)
-            val handlers = mediatorK.getDomainEventsHandlers();
-            assert(handlers.size == 5)
-        }
-    }
-
 
     @Test
     fun createDomainEventTest() {
@@ -67,29 +59,30 @@ class TestDomainEvents() : TestBase() {
 
     @Test
     fun missingService() {
-        assertThrows<MissingServiceException> {
+        assertThrows<MissingComponentException> {
             val mediatorK = getMediatorK(DOMAIN_EVENTS_CONFIG_FILE_SUCCESS_MISSING)
         }
     }
 
     @Test
     fun successConfigNoService() {
-        val mediatorK = getMediatorK(DOMAIN_EVENTS_CONFIG_FILE_SUCCESS_NOSERVICE, false)
-        val handlers = mediatorK.getDomainEventsHandlers()
-        assert(handlers.size == 1)
-        val domainEventSet: MutableSet<Class<DomainEventHandler>> =
-            handlers.getOrDefault(TEST_DOMAINEVENT_CLASS, mutableSetOf())
-        var found = false
-        domainEventSet.forEach {
-            if (it == TestNoServiceDomainEventHandler::class.java) found = true
+        assertThrows<MissingComponentException> {
+            val mediatorK = getMediatorK(DOMAIN_EVENTS_CONFIG_FILE_SUCCESS_NOSERVICE, false)
         }
-        assert(found)
     }
 
     @Test
     fun missingWrongInterface() {
         assertThrows<DomainEventHandlerConfigurationException> {
             val mediatorK = getMediatorK(DOMAIN_EVENTS_CONFIG_FILE_EXCEPTION)
+        }
+    }
+
+    @Test
+    fun wrongConstructor() {
+        assertThrows<NoEmptyHandlerConstructor> {
+            val mediatorK = getMediatorK(DOMAIN_EVENTS_CONFIG_FILE_WRONG_CONSTRUCTOR)
+            //mediatorK.send(TestCreateCommand( UUID.randomUUID(), "TestCommand"))
         }
     }
 

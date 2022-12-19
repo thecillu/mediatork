@@ -8,23 +8,23 @@ import com.cillu.mediator.integrationevents.domain.FakeIntegrationEvent
 import com.cillu.mediator.integrationevents.domain.FilteredIntegrationEvent
 import com.cillu.mediator.services.MemoryRepository
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class
 TestIntegrationEvents(): TestBase() {
 
     @Test
     fun publishMultiple() {
-        val pair = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SNS_MULTIPLE)
-        val mediatorK = pair.first
-        val messageBroker = pair.second
-        val memoryRepository = mediatorK.getServiceRegistry().getService(MemoryRepository::class.java) as MemoryRepository
+        val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SNS_MULTIPLE)
+        val messageBroker = mediatorK.getMessageBroker()
+        val memoryRepository = mediatorK.getComponent(MemoryRepository::class.java) as MemoryRepository
         memoryRepository.count = 0
         var messages: Long = 3
         for ( i in 1..messages ){
-            mediatorK.publish(FakeIntegrationEvent())
-            mediatorK.publish(PippoIntegrationEvent())
-            mediatorK.publish(FilteredIntegrationEvent())
-            mediatorK.publish(PlutoIntegrationEvent())
+            mediatorK.publish(FakeIntegrationEvent(UUID.randomUUID()))
+            mediatorK.publish(PippoIntegrationEvent(UUID.randomUUID()))
+            mediatorK.publish(FilteredIntegrationEvent(UUID.randomUUID()))
+            mediatorK.publish(PlutoIntegrationEvent(UUID.randomUUID()))
         }
         Thread.sleep(5000)
         println("MemoryRepo count: ${memoryRepository.count}")

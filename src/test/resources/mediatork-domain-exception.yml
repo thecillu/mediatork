@@ -1,6 +1,5 @@
 mediator:
   paths:
-    -  "com.cillu.mediator.domainevents.config.exception"
-  messageBroker:
-    name: localMessageBroker
+    - "com.cillu.mediator.domainevents.config.exception"
+    - "com.cillu.mediator.services"
 

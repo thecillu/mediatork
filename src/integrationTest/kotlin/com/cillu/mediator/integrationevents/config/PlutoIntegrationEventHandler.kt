@@ -1,5 +1,6 @@
 package com.cillu.mediator.integrationevents.config
 
+import com.cillu.mediator.annotations.Inject
 import com.cillu.mediator.annotations.IntegrationEventHandler
 import com.cillu.mediator.integrationevents.IIntegrationEventHandler
 import com.cillu.mediator.integrationevents.domain.PippoIntegrationEvent
@@ -8,7 +9,10 @@ import com.cillu.mediator.services.MemoryRepository
 import mu.KotlinLogging
 
 @IntegrationEventHandler
-class PlutoIntegrationEventHandler(val memoryRepository: MemoryRepository) : IIntegrationEventHandler<PlutoIntegrationEvent>, Exception() {
+class PlutoIntegrationEventHandler: IIntegrationEventHandler<PlutoIntegrationEvent>, Exception() {
+    
+    @Inject
+    lateinit var memoryRepository: MemoryRepository
 
     private val logger = KotlinLogging.logger {}
 

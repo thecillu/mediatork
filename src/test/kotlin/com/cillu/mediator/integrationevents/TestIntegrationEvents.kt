@@ -2,10 +2,7 @@ package com.cillu.mediator.integrationevents
 
 import com.cillu.mediator.TestBase
 import com.cillu.mediator.TestItem
-import com.cillu.mediator.exceptions.IntegrationEventHandlerConfigurationException
-import com.cillu.mediator.exceptions.MutipleIntegrationEventHandlerConfigurationException
-import com.cillu.mediator.exceptions.IntegrationEventHandlerNotFoundException
-import com.cillu.mediator.exceptions.MissingServiceException
+import com.cillu.mediator.exceptions.*
 import com.cillu.mediator.integrationevents.config.noservice.TestNoServiceIntegrationEventHandler
 import com.cillu.mediator.integrationevents.config.success.FakeIntegrationEventHandler
 import com.cillu.mediator.integrationevents.domain.FakeIntegrationEvent
@@ -14,6 +11,7 @@ import com.cillu.mediator.integrationevents.config.success.TestIntegrationEventH
 import com.cillu.mediator.integrationevents.domain.TestIntegrationEvent
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.util.*
 
 class TestIntegrationEvents(): TestBase() {
 
@@ -26,14 +24,14 @@ class TestIntegrationEvents(): TestBase() {
         val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SUCCESS)
         val handlers = mediatorK.getIntegrationEventsHandlers();
         assert( handlers.size == 3)
-        assert( handlers[TEST_INTEGRATIONEVENT_CLASS] == TestIntegrationEventHandler::class.java)
-        assert( handlers[TEST_INTEGRATIONEVENT2_CLASS] == TestIntegrationEvent2Handler::class.java)
-        assert( handlers[FAKE_INTEGRATIONEVENT_CLASS] == FakeIntegrationEventHandler::class.java)
+        assert( handlers[TEST_INTEGRATIONEVENT_CLASS]!!::class.java == TestIntegrationEventHandler::class.java)
+        assert( handlers[TEST_INTEGRATIONEVENT2_CLASS]!!::class.java == TestIntegrationEvent2Handler::class.java)
+        assert( handlers[FAKE_INTEGRATIONEVENT_CLASS]!!::class.java == FakeIntegrationEventHandler::class.java)
     }
 
     @Test
     fun duplicateConfig() {
-        assertThrows<MutipleIntegrationEventHandlerConfigurationException> {
+        assertThrows<MultipleIntegrationEventHandlerConfigurationException> {
             getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_DUPLICATE)
         }
     }
@@ -44,19 +42,19 @@ class TestIntegrationEvents(): TestBase() {
         assertThrows<IntegrationEventHandlerNotFoundException> {
             //scan the wrong packages, without any commandHandler
             val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_MISSING)
-            mediatorK.process(TestIntegrationEvent( TestItem.create("TestIntegrationEvent")))
+            mediatorK.process(TestIntegrationEvent( UUID.randomUUID(), TestItem.create("TestIntegrationEvent")))
         }
     }
 
     @Test
     fun submit() {
         val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SUCCESS)
-        mediatorK.publish(FakeIntegrationEvent())
+        mediatorK.publish(FakeIntegrationEvent(UUID.randomUUID()))
     }
 
     @Test
     fun missingService() {
-        assertThrows<MissingServiceException> {
+        assertThrows<MissingComponentException> {
             val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_MISSING_SERVICE)
         }
     }
@@ -64,16 +62,22 @@ class TestIntegrationEvents(): TestBase() {
 
     @Test
     fun successConfigNoService() {
-        val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SUCCESS_NOSERVICE, false)
-        val handlers = mediatorK.getIntegrationEventsHandlers()
-        assert( handlers.size == 1)
-        assert( handlers[TEST_INTEGRATIONEVENT_CLASS] == TestNoServiceIntegrationEventHandler::class.java)
+        assertThrows<MissingComponentException> {
+            val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SUCCESS_NOSERVICE, false)
+        }
     }
 
     @Test
     fun wrongInterface() {
         assertThrows<IntegrationEventHandlerConfigurationException> {
             getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_EXCEPTION)
+        }
+    }
+
+    @Test
+    fun wrongConstructor() {
+        assertThrows<NoEmptyHandlerConstructor> {
+            val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_WRONG_CONSTRUCTOR)
         }
     }
 }

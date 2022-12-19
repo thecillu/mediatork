@@ -1,6 +1,0 @@
-mediator:
-  paths:
-    - "*"
-  messageBroker:
-    name: localMessageBroker
-

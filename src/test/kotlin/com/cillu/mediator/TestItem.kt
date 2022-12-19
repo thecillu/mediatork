@@ -12,7 +12,7 @@ open class TestItem private constructor(name: String): Aggregate() {
         fun create(name: String): TestItem {
             var item = TestItem(name)
             item.id = UUID.randomUUID();
-            item.addDomainEvent(TestDomainEvent(item))
+            item.addDomainEvent(TestDomainEvent(UUID.randomUUID(), item))
             return item;
         }
     }

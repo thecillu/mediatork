@@ -3,7 +3,7 @@ package com.cillu.mediator.commands.domain
 import com.cillu.mediator.commands.Command
 import java.util.*
 
-class TestNoServiceCommand(id: UUID, name: String): Command() {
+class TestNoServiceCommand(idEvent:UUID, name: String): Command(idEvent) {
     val name: String = name
 }
 

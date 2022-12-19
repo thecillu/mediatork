@@ -1,6 +1,7 @@
 mediator:
   paths:
-    -  "com.cillu.mediator.integrationevents.config.single"
+    - "com.cillu.mediator.integrationevents.config.single"
+    - "com.cillu.mediator.services"
   messageBroker:
     name: rabbitMq
     rabbitMq:

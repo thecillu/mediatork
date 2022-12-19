@@ -1,6 +1,5 @@
 mediator:
   paths:
     - "com.cillu.mediator.commands.config.success"
-  messageBroker:
-    name: localMessageBroker
+    - "com.cillu.mediator.services"
 

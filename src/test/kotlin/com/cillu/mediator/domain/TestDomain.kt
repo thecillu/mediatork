@@ -17,35 +17,36 @@ import com.cillu.mediator.integrationevents.IntegrationEvent
 import com.cillu.mediator.queries.Query
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.util.*
 
 class TestDomain() : TestBase() {
 
     @Test
-    fun testCommend() {
-        val command = Command()
-        val id = command.id
-        assert(!id.toString().isNullOrEmpty())
+    fun testCommand() {
+        val command = Command(UUID.randomUUID())
+        val idEvent = command.idEvent
+        assert(!idEvent.toString().isNullOrEmpty())
     }
 
     @Test
     fun testQuery() {
-        val query = Query()
-        val id = query.id
-        assert(!id.toString().isNullOrEmpty())
+        val query = Query(UUID.randomUUID())
+        val idEvent = query.idEvent
+        assert(!idEvent.toString().isNullOrEmpty())
     }
 
     @Test
     fun testIntegrationEvent() {
-        val integrationEvent = IntegrationEvent()
-        val id = integrationEvent.id
-        assert(!id.toString().isNullOrEmpty())
+        val integrationEvent = IntegrationEvent(UUID.randomUUID())
+        val idEvent = integrationEvent.idEvent
+        assert(!idEvent.toString().isNullOrEmpty())
     }
 
     @Test
     fun testDomainEvent() {
-        val domainEvent = DomainEvent()
-        val id = domainEvent.id
-        assert(!id.toString().isNullOrEmpty())
+        val domainEvent = DomainEvent(UUID.randomUUID())
+        val idEvent = domainEvent.idEvent
+        assert(!idEvent.toString().isNullOrEmpty())
     }
 
 

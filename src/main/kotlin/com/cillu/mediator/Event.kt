@@ -2,6 +2,4 @@ package com.cillu.mediator
 
 import java.util.*
 
-open class Event() {
-    val id: UUID = UUID.randomUUID();
-}
+open class Event(val idEvent: UUID)
