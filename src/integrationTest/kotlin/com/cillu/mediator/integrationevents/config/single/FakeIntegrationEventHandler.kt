@@ -8,12 +8,11 @@ import com.cillu.mediator.services.MemoryRepository
 import mu.KotlinLogging
 
 @IntegrationEventHandler
-class FakeIntegrationEventHandler: IIntegrationEventHandler<FakeIntegrationEvent>, Exception() {
-
-    @Inject
-    lateinit var memoryRepository: MemoryRepository
+class FakeIntegrationEventHandler : IIntegrationEventHandler<FakeIntegrationEvent>, Exception() {
 
     private val logger = KotlinLogging.logger {}
+    @Inject
+    lateinit var memoryRepository: MemoryRepository
 
     override fun handle( event: FakeIntegrationEvent) {
         logger.info("Executing FakeIntegrationEvent")

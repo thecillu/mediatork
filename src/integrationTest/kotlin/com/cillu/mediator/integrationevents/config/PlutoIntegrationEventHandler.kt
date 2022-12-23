@@ -10,10 +10,9 @@ import mu.KotlinLogging
 
 @IntegrationEventHandler
 class PlutoIntegrationEventHandler: IIntegrationEventHandler<PlutoIntegrationEvent>, Exception() {
-    
+
     @Inject
     lateinit var memoryRepository: MemoryRepository
-
     private val logger = KotlinLogging.logger {}
 
     override fun handle( event: PlutoIntegrationEvent) {

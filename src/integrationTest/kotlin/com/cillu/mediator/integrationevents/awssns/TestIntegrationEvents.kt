@@ -15,16 +15,15 @@ TestIntegrationEvents(): TestBase() {
 
     @Test
     fun publishMultiple() {
-        val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SNS_MULTIPLE)
-        val messageBroker = mediatorK.getMessageBroker()
+        val mediatorK = getMediatorKwithAwsSns(INTEGRATION_EVENTS_CONFIG_FILE_SNS_MULTIPLE)
         val memoryRepository = mediatorK.getComponent(MemoryRepository::class.java) as MemoryRepository
         memoryRepository.count = 0
         var messages: Long = 3
         for ( i in 1..messages ){
-            mediatorK.publish(FakeIntegrationEvent(UUID.randomUUID()))
-            mediatorK.publish(PippoIntegrationEvent(UUID.randomUUID()))
-            mediatorK.publish(FilteredIntegrationEvent(UUID.randomUUID()))
-            mediatorK.publish(PlutoIntegrationEvent(UUID.randomUUID()))
+            mediatorK.publish(FakeIntegrationEvent())
+            mediatorK.publish(PippoIntegrationEvent())
+            mediatorK.publish(FilteredIntegrationEvent())
+            mediatorK.publish(PlutoIntegrationEvent())
         }
         Thread.sleep(5000)
         println("MemoryRepo count: ${memoryRepository.count}")

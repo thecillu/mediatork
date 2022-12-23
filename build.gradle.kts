@@ -37,11 +37,11 @@ dependencies {
     implementation("org.junit.jupiter:junit-jupiter:5.8.2")
     implementation("com.rabbitmq:amqp-client:5.15.0")
     implementation("com.google.code.gson:gson:2.9.0")
-    implementation("com.sksamuel.hoplite:hoplite-core:2.4.0")
-    implementation("com.sksamuel.hoplite:hoplite-yaml:2.4.0")
     implementation("aws.sdk.kotlin:sns:0.16.0")
     implementation("aws.sdk.kotlin:sqs:0.16.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("com.sksamuel.hoplite:hoplite-core:2.4.0")
+    testImplementation("com.sksamuel.hoplite:hoplite-yaml:2.4.0")
 }
 
 tasks.withType<Test> {

@@ -5,12 +5,10 @@ import com.cillu.mediator.integrationevents.config.single.FakeIntegrationEventHa
 import com.cillu.mediator.integrationevents.domain.FakeIntegrationEvent
 import com.cillu.mediator.services.MemoryRepository
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class TestIntegrationEvents(): TestBase() {
 
-    val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_RABBITMQ)
-    val messageBroker = mediatorK.getMessageBroker()
+    val mediatorK = getMediatorKwithRabbitMQ(INTEGRATION_EVENTS_CONFIG_FILE_RABBITMQ)
 
     @Test
     fun successConfig() {
@@ -21,7 +19,7 @@ class TestIntegrationEvents(): TestBase() {
 
     @Test
     fun publishAndConsume() {
-        mediatorK.publish(FakeIntegrationEvent(UUID.randomUUID()))
+        mediatorK.publish(FakeIntegrationEvent())
         Thread.sleep(3000)
         val memoryRepository = mediatorK.getComponent(MemoryRepository::class.java) as MemoryRepository
         assert ( memoryRepository.count == 1)

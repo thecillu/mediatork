@@ -35,32 +35,25 @@ class AwsSnsMessageBroker : IMessageBroker {
     private val retryAfterSeconds: Int
     private val workerPool: ExecutorService
     private var integrationEventNames = mutableListOf<String>();
-    private var processTimeout: String
+    private var processTimeout: Int
     var stopConsumers: Boolean
 
     internal constructor(
-        regionVal: String,
-        topicName: String,
-        queueName: String,
-        maxConsumers: Int,
-        maxMessages: Int,
-        waitTimeSeconds: Int,
-        retryAfterSeconds: Int,
-        processTimeout: String
+        awsSnsConfiguration: AwsSnsConfiguration
     ) {
-        this.queueName = queueName
-        this.topicName = topicName
-        this.region = regionVal
-        this.retryAfterSeconds = retryAfterSeconds
-        this.maxConsumers = maxConsumers
-        this.maxMessages = maxMessages
-        this.waitTimeSeconds = waitTimeSeconds
-        this.processTimeout = processTimeout
+        this.queueName = awsSnsConfiguration.queueName
+        this.topicName = awsSnsConfiguration.topicName
+        this.region = awsSnsConfiguration.region
+        this.retryAfterSeconds = awsSnsConfiguration.retryAfterSeconds!!
+        this.maxConsumers = awsSnsConfiguration.consumers!!
+        this.maxMessages = awsSnsConfiguration.maxMessages!!
+        this.waitTimeSeconds = awsSnsConfiguration.waitTimeSeconds!!
+        this.processTimeout = awsSnsConfiguration.processTimeoutSeconds!!
         this.stopConsumers = false
         workerPool = Executors.newFixedThreadPool(maxConsumers)
         runBlocking {
-            snsClient = SnsClient { region = regionVal }
-            sqsClient = SqsClient { region = regionVal }
+            snsClient = SnsClient { region = awsSnsConfiguration.region }
+            sqsClient = SqsClient { region = awsSnsConfiguration.region }
             configure(topicName, queueName)
         }
     }
@@ -107,7 +100,7 @@ class AwsSnsMessageBroker : IMessageBroker {
     private fun createSourceQueue(queueNameVal: String) {
         logger.info("Creating Queue $queueNameVal on Region $region")
 
-        val queueAttributes  = mapOf( QueueAttributeName.VisibilityTimeout.value to processTimeout)
+        val queueAttributes  = mapOf( QueueAttributeName.VisibilityTimeout.value to processTimeout.toString())
         runBlocking {
             val createQueueRequest = CreateQueueRequest {
                 queueName = queueNameVal

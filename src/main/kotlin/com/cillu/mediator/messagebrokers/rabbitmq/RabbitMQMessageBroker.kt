@@ -26,21 +26,20 @@ class RabbitMQMessageBroker : IMessageBroker {
 
     private val EXCHANGE_TYPE = "topic"
 
+
     internal constructor(
-        host: String, port: Int,  username: String,  password: String,
-        useSslProtocol: Boolean, exchangeName: String, queueName: String,
-        consumerRetryLimit: Int
+        rabbitMQConfiguration: RabbitMQConfiguration
     ) {
-        this.host = host
-        this.port = port
-        this.username = username
-        this.password = password
-        this.useSslProtocol = useSslProtocol
-        this.exchangeName = exchangeName
-        this.queueName = queueName
-        this.dlqExchangeName = "$exchangeName.dlq"
-        this.dlqQueueName = "$queueName.dlq"
-        this.consumerRetryLimit = consumerRetryLimit
+        this.host = rabbitMQConfiguration.host
+        this.port = rabbitMQConfiguration.port
+        this.username = rabbitMQConfiguration.username
+        this.password = rabbitMQConfiguration.password
+        this.useSslProtocol = rabbitMQConfiguration.useSslProtocol!!
+        this.exchangeName = rabbitMQConfiguration.exchangeName
+        this.queueName = rabbitMQConfiguration.queueName
+        this.dlqExchangeName = "${rabbitMQConfiguration.exchangeName}.dlq"
+        this.dlqQueueName = "${rabbitMQConfiguration.queueName}.dlq"
+        this.consumerRetryLimit = rabbitMQConfiguration.consumerRetryLimit!!
         val factory = ConnectionFactory()
         factory.host = this.host;
         factory.port = 5672;

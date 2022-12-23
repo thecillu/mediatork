@@ -1,9 +1,9 @@
 package com.cillu.mediator.integrationevents.domain
 
 import com.cillu.mediator.integrationevents.IntegrationEvent
-import java.util.*
+import java.util.UUID
 
-class FilteredIntegrationEvent(idEvent: UUID): IntegrationEvent(idEvent) {
+class FilteredIntegrationEvent(): IntegrationEvent(UUID.randomUUID()) {
 
 }
 
