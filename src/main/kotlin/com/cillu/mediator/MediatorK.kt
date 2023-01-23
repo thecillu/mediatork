@@ -63,47 +63,31 @@ class MediatorK private constructor(
         var classInstance: ICommandHandler<*>? = commandHandlersMapper.getHandlers()[command::class.java.name]
             ?: throw CommandHandlerNotFoundException(command::class.java.name)
         val methodHandler = classInstance?.javaClass?.getMethod("handle", Command::class.java)
-        logger.info("Invoking ${classInstance?.javaClass?.name} for command $command");
+        logger.info(">>> Invoking ${classInstance?.javaClass?.name} for command ${command::class.java} [id:${command.idEvent}]");
         val result = methodHandler?.invoke(classInstance, command)
-        logger.info("Invoked ${classInstance?.javaClass?.name} for command $command")
+        logger.info("<<< Invoked ${classInstance?.javaClass?.name} for command  ${command::class.java} [id:${command.idEvent}]")
         return result
     }
 
     override fun send(query: Query): Any? {
-        var classInstance = queryHandlersMapper.getHandlers()[query::class.java.name]
+         val classInstance = queryHandlersMapper.getHandlers()[query::class.java.name]
             ?: throw QueryHandlerNotFoundException(query::class.java.name)
-        val methodHandler = classInstance?.javaClass?.getMethod("handle", Query::class.java)
-        logger.info("Invoking ${classInstance?.javaClass?.name} for query $query");
-        val result = methodHandler?.invoke(classInstance, query)
-        logger.info("Invoked ${classInstance?.javaClass?.name} for query $query")
+        val methodHandler = classInstance.javaClass.getMethod("handle", Query::class.java)
+        logger.info(">>> Invoking ${classInstance.javaClass.name} for query  ${query::class.java} [id:${query.idEvent}]");
+        val result = methodHandler.invoke(classInstance, query)
+        logger.info("<<< Invoked ${classInstance.javaClass.name} for query ${query::class.java} [id:${query.idEvent}]\"")
         return result
-    }
-
-    private fun getConstructorArgs(annotatedClass: Class<*>): MutableList<Any> {
-        var constructorArgs = mutableListOf<Any>()
-        for (constructor in annotatedClass.constructors) {
-            val parameters = constructor.parameters
-            for (parameter in parameters) {
-                var parameterInstance = servicesRegistry.getService(parameter.type)
-                logger.info("Found instance ${parameterInstance} for parameter type ${parameter.type}");
-                constructorArgs.add(parameterInstance!!)
-            }
-        }
-        return constructorArgs
     }
 
     private fun invoke(domainEvent: DomainEvent) {
         val domainEventSet = getDomainEventHandlers(domainEvent)
-        logger.info("Invoking all DomainEventHandlers for domain event $domainEvent")
         runBlocking {
             domainEventSet?.forEach {
-                val methodHandler = it?.javaClass?.getMethod("handle", DomainEvent::class.java)
-                logger.info("Invoking ${it?.javaClass?.name} for $domainEvent")
+                val methodHandler = it.javaClass.getMethod("handle", DomainEvent::class.java)
                 launch(Dispatchers.Default) {
-                    //var constructorArgs = getConstructorArgs(it)
-                    logger.info("Invoking ${it?.javaClass?.name} for event $domainEvent");
+                    logger.info(">>> Invoking ${it.javaClass.name} for event ${domainEvent::class.java} [id:${domainEvent.idEvent}]");
                     methodHandler?.invoke(it, domainEvent)
-                    logger.info("Invoked ${it?.javaClass?.name} for event $domainEvent");
+                    logger.info("<<< Invoked ${it.javaClass.name} for event ${domainEvent::class.java} [id:${domainEvent.idEvent}]");
                 }
             }
         }
@@ -113,40 +97,38 @@ class MediatorK private constructor(
     override fun raiseDomainEvents(aggregate: Aggregate) {
         var domainEvents: List<DomainEvent> = aggregate.getDomainEvents()
         if (domainEvents.isEmpty()) {
-            logger.info("No DomainEvents for Aggregate ${aggregate::class.java}")
+            logger.info("There aren't DomainEvents for Aggregate ${aggregate::class.java}")
             return
         }
         logger.info("Raising ${domainEvents.size} DomainEvents for Aggregate ${aggregate::class.java}")
         runBlocking {
             domainEvents.forEach {
-                logger.info("Invoking all DomainEventsHandlers for DomainEvent ${it::class.java}")
                 launch(Dispatchers.Default) { invoke(it) }
             }
         }
-        logger.info("Raised ${domainEvents.size} DomainEvents")
+        logger.info("Raised ${domainEvents.size} DomainEvents for Aggregate ${aggregate::class.java}")
         aggregate.removeDomainEvents();
-        logger.info("Removed raised DomainEvents (new size is ${domainEvents.size})")
+        logger.info("Removed DomainEvents for Aggregate ${aggregate::class.java} (new size is ${domainEvents.size})")
     }
 
     override fun publish(integrationEvent: IntegrationEvent) {
         val integrationEventName: String = integrationEvent::class.java.name
-        logger.info("Publishing $integrationEventName")
+        logger.info(">>> Publishing $integrationEventName  [id:${integrationEvent.idEvent}]")
         if (messageBroker == null) {
-            throw Exception("You need to define a MessageBroker")
+            throw Exception("You need to configure a MessageBroker! [id:${integrationEvent.idEvent}]")
         }
         messageBroker.publish(integrationEvent)
-        logger.info("Published $integrationEventName")
+        logger.info("<<< Published $integrationEventName [id:${integrationEvent.idEvent}]")
     }
 
     override fun process(integrationEvent: IntegrationEvent) {
         val integrationEventName: String = integrationEvent::class.java.name
-        var classInstance = integrationEventHandlersMapper.getHandlers()[integrationEventName]
+        val classInstance = integrationEventHandlersMapper.getHandlers()[integrationEventName]
             ?: throw IntegrationEventHandlerNotFoundException(integrationEventName)
-        logger.info("Processing $integrationEventName with Handler ${classInstance::class.java.name}")
-        val methodHandler = classInstance?.javaClass?.getMethod("handle", IntegrationEvent::class.java)
-        logger.info("Invoking ${classInstance::class.java.name} for event $integrationEventName");
+        val methodHandler = classInstance.javaClass.getMethod("handle", IntegrationEvent::class.java)
+        logger.info(">>> Invoking ${classInstance::class.java.name} for event $integrationEventName [id:${integrationEvent.idEvent}]");
         methodHandler?.invoke(classInstance, integrationEvent)
-        logger.info("Invoked ${classInstance::class.java.name} for event $integrationEventName")
+        logger.info("<<< Invoked ${classInstance::class.java.name} for event $integrationEventName [id:${integrationEvent.idEvent}]")
     }
 
     override fun getQueryHandlers(): MutableMap<String, IQueryHandler<*>> {

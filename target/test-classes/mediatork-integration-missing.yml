@@ -1,0 +1,5 @@
+mediator:
+  paths:
+    - "com.cillu.mediator.integrationevents.domain"
+    - "com.cillu.mediator.services"
+

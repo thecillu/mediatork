@@ -1,5 +1,6 @@
 package com.cillu.mediator.messagebrokers.aws
 
+
 import aws.sdk.kotlin.services.sns.SnsClient
 import aws.sdk.kotlin.services.sns.model.*
 import aws.sdk.kotlin.services.sns.model.MessageAttributeValue
@@ -207,5 +208,3 @@ class AwsSnsMessageBroker : IMessageBroker {
         }
     }
 }
-
-data class SnsNotification(val Type: String, val MessageId: String, val Subject: String, val Message: String)

@@ -1,0 +1,6 @@
+mediator:
+  paths:
+    - "com.cillu.mediator.integrationevents.config.missing"
+    - "com.cillu.mediator.services"
+
+

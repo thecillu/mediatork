@@ -1,0 +1,6 @@
+mediator:
+  paths:
+    - "com.cillu.mediator.commands.config.wrongconstructor"
+    - "com.cillu.mediator.services"
+
+

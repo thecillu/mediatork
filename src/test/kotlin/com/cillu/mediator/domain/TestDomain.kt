@@ -1,25 +1,14 @@
 package com.cillu.mediator.domain
 
-import com.cillu.mediator.TestBase
-import com.cillu.mediator.TestItem
-import com.cillu.mediator.TestItem2
-import com.cillu.mediator.annotations.DomainEventHandler
+import com.cillu.mediator.Base
 import com.cillu.mediator.commands.Command
 import com.cillu.mediator.domainevents.DomainEvent
-import com.cillu.mediator.domainevents.config.noservice.TestNoServiceDomainEventHandler
-import com.cillu.mediator.domainevents.config.success.TestDomainEvent2Handler
-import com.cillu.mediator.domainevents.config.success.TestDomainEventHandler2
-import com.cillu.mediator.domainevents.config.success.TestDomainEventHandler
-import com.cillu.mediator.domainevents.domain.TestDomainEvent
-import com.cillu.mediator.exceptions.DomainEventHandlerConfigurationException
-import com.cillu.mediator.exceptions.MissingServiceException
 import com.cillu.mediator.integrationevents.IntegrationEvent
 import com.cillu.mediator.queries.Query
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-class TestDomain() : TestBase() {
+class TestDomain() : Base() {
 
     @Test
     fun testCommand() {

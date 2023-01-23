@@ -1,0 +1,5 @@
+mediator:
+  paths:
+    - "com.cillu.mediator.domainevents.config.wrongconstructor"
+    - "com.cillu.mediator.services"
+

@@ -8,7 +8,6 @@ class AwsSnsPolicy {
                 filterPolicy = filterPolicy.plus("\"").plus(it).plus("\"").plus(",")
             }
             filterPolicy = filterPolicy.dropLast(1).plus("]}")
-            println(filterPolicy)
             return filterPolicy
         }
     }

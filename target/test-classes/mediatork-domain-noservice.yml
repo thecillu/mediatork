@@ -1,0 +1,6 @@
+mediator:
+  paths:
+    -  "com.cillu.mediator.domainevents.config.noservice"
+    - "com.cillu.mediator.services"
+
+

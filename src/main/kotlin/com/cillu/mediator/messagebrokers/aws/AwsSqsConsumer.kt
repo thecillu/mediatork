@@ -1,6 +1,5 @@
 package com.cillu.mediator.messagebrokers.aws
 
-import aws.sdk.kotlin.services.sns.model.MessageAttributeValue
 import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.ChangeMessageVisibilityRequest
 import aws.sdk.kotlin.services.sqs.model.DeleteMessageRequest
