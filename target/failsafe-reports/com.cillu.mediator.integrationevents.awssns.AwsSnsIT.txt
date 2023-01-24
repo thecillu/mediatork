@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.cillu.mediator.integrationevents.awssns.AwsSnsIT
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.447 s - in com.cillu.mediator.integrationevents.awssns.AwsSnsIT
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.476 s - in com.cillu.mediator.integrationevents.awssns.AwsSnsIT

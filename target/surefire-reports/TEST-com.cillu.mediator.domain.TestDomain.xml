@@ -47,7 +47,7 @@
     <property name="java.class.path" value="/usr/local/Cellar/maven/3.8.6/libexec/boot/plexus-classworlds-2.6.0.jar"/>
     <property name="java.vm.specification.version" value="17"/>
     <property name="sun.arch.data.model" value="64"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean integration-test"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher install"/>
     <property name="java.home" value="/Users/fcilluffo/Library/Java/JavaVirtualMachines/openjdk-17.0.2/Contents/Home"/>
     <property name="ast.loading.filter" value="false"/>
     <property name="user.language" value="it"/>
@@ -68,8 +68,8 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
   </properties>
-  <testcase classname="com.cillu.mediator.domain.TestDomain" name="com.cillu.mediator.domain.TestDomain.testQuery" time="0"/>
   <testcase classname="com.cillu.mediator.domain.TestDomain" name="com.cillu.mediator.domain.TestDomain.testCommand" time="0"/>
   <testcase classname="com.cillu.mediator.domain.TestDomain" name="com.cillu.mediator.domain.TestDomain.testIntegrationEvent" time="0"/>
   <testcase classname="com.cillu.mediator.domain.TestDomain" name="com.cillu.mediator.domain.TestDomain.testDomainEvent" time="0"/>
+  <testcase classname="com.cillu.mediator.domain.TestDomain" name="com.cillu.mediator.domain.TestDomain.testQuery" time="0"/>
 </testsuite>

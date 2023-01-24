@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="8" failures="0" name="com.cillu.mediator.queries.TestQueries" time="0.33" errors="0" skipped="0">
+<testsuite tests="8" failures="0" name="com.cillu.mediator.queries.TestQueries" time="0.276" errors="0" skipped="0">
   <properties>
     <property name="idea.plugins.compatible.build" value="999.SNAPSHOT"/>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
@@ -47,7 +47,7 @@
     <property name="java.class.path" value="/usr/local/Cellar/maven/3.8.6/libexec/boot/plexus-classworlds-2.6.0.jar"/>
     <property name="java.vm.specification.version" value="17"/>
     <property name="sun.arch.data.model" value="64"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher clean integration-test"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher install"/>
     <property name="java.home" value="/Users/fcilluffo/Library/Java/JavaVirtualMachines/openjdk-17.0.2/Contents/Home"/>
     <property name="ast.loading.filter" value="false"/>
     <property name="user.language" value="it"/>
@@ -68,12 +68,12 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
   </properties>
-  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testQuery" time="0.054"/>
-  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testQuery2" time="0.036"/>
-  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testSuccessConfig" time="0.033"/>
-  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testMissingService" time="0.043"/>
-  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testWrongConstructor" time="0.04"/>
+  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testSuccessConfig" time="0.019"/>
+  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testMissingService" time="0.04"/>
+  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testWrongConstructor" time="0.035"/>
+  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testMissingConfig" time="0.042"/>
+  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testDuplicateConfig" time="0.036"/>
   <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testWrongInterface" time="0.044"/>
-  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testMissingConfig" time="0.035"/>
-  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testDuplicateConfig" time="0.045"/>
+  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testQuery" time="0.031"/>
+  <testcase classname="com.cillu.mediator.queries.TestQueries" name="com.cillu.mediator.queries.TestQueries.testQuery2" time="0.029"/>
 </testsuite>
