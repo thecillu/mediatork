@@ -1,6 +1,0 @@
-mediator:
-  paths:
-    - "com.cillu.mediator.commands.config.success"
-    - "com.cillu.mediator.commands.config.error"
-    - "com.cillu.mediator.services"
-

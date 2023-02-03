@@ -1,7 +1,0 @@
-mediator:
-  paths:
-    - "com.cillu.mediator.commands.config.noservice"
-    - "com.cillu.mediator.services"
-
-
-

@@ -1,5 +1,0 @@
-mediator:
-  paths:
-    -  "com.cillu.mediator.domainevents.config.missing"
-    - "com.cillu.mediator.services"
-

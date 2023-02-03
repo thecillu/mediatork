@@ -1,4 +1,0 @@
-mediator:
-  paths:
-    - "com.cillu.mediator.queries.config.missing"
-    - "com.cillu.mediator.services"

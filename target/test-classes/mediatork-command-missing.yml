@@ -1,4 +1,0 @@
-mediator:
-  paths:
-    - "com.cillu.mediator.commands.domain"
-    - "com.cillu.mediator.services"
