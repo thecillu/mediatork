@@ -1,11 +1,13 @@
 package com.cillu.mediator.messagebrokers.aws
 
 
+import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
 import aws.sdk.kotlin.services.sns.SnsClient
 import aws.sdk.kotlin.services.sns.model.*
 import aws.sdk.kotlin.services.sns.model.MessageAttributeValue
 import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.*
+import aws.smithy.kotlin.runtime.http.Url
 import com.cillu.mediator.IMediator
 import com.cillu.mediator.integrationevents.IntegrationEvent
 import com.cillu.mediator.messagebrokers.IMessageBroker
@@ -53,8 +55,22 @@ class AwsSnsMessageBroker : IMessageBroker {
         this.stopConsumers = false
         workerPool = Executors.newFixedThreadPool(maxConsumers)
         runBlocking {
-            snsClient = SnsClient { region = awsSnsConfiguration.region }
-            sqsClient = SqsClient { region = awsSnsConfiguration.region }
+            snsClient = SnsClient.fromEnvironment() {
+                region = awsSnsConfiguration.region
+                endpointUrl = Url.parse(awsSnsConfiguration.snsEndpointUrl)
+                credentialsProvider = StaticCredentialsProvider {
+                        accessKeyId = awsSnsConfiguration.accessKeyId
+                        secretAccessKey = awsSnsConfiguration.secretAccessKey
+                }
+            }
+            sqsClient = SqsClient.fromEnvironment() {
+                region = awsSnsConfiguration.region
+                endpointUrl = Url.parse(awsSnsConfiguration.sqsEndpointUrl)
+                credentialsProvider = StaticCredentialsProvider {
+                    accessKeyId = awsSnsConfiguration.accessKeyId
+                    secretAccessKey = awsSnsConfiguration.secretAccessKey
+                }
+            }
             configure(topicName, queueName)
         }
     }

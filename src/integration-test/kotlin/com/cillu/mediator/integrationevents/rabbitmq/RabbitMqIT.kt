@@ -1,14 +1,38 @@
 package com.cillu.mediator.integrationevents.rabbitmq
 
 import com.cillu.mediator.IntegrationBase
-import com.cillu.mediator.integrationevents.config.single.FakeIntegrationEventHandler
 import com.cillu.mediator.integrationevents.domain.FakeIntegrationEvent
 import com.cillu.mediator.integrationevents.services.IRepository
 import com.cillu.mediator.integrationevents.services.MemoryRepository
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.testcontainers.containers.GenericContainer
+import java.io.File
 import java.util.*
 
-class RabbitMqIT(): IntegrationBase() {
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class RabbitMqIT: IntegrationBase() {
+
+    @BeforeAll
+    fun testInit() {
+        /*var builder = EmbeddedRabbitMqConfig.Builder()
+            .downloadFolder(File("/tmp/rabbitmq")).envVar(RabbitMqEnvVar.NODENAME,"test")
+            .extractionFolder(File("/tmp/rabbitmq/extraction"))
+            .rabbitMqServerInitializationTimeoutInMillis(10000)
+            .useCachedDownload(true)
+
+        var config = builder.build()
+        rabbitMq = EmbeddedRabbitMq(config);
+        rabbitMq.start();*/
+    }
+
+    @AfterAll
+    fun testStop() {
+        //rabbitMq.stop()
+    }
 
 
     @Test
@@ -17,7 +41,6 @@ class RabbitMqIT(): IntegrationBase() {
         mediatorK.publish(FakeIntegrationEvent(UUID.randomUUID()))
         Thread.sleep(3000)
         val memoryRepository = mediatorK.getComponent(IRepository::class.java) as MemoryRepository
-        println( memoryRepository.count )
-        assert ( memoryRepository.count == 1)
+        assert(memoryRepository.count == 1)
     }
 }

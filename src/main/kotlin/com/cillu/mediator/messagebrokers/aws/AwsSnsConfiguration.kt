@@ -2,6 +2,10 @@ package com.cillu.mediator.messagebrokers.aws
 
 data class AwsSnsConfiguration(
     val region: String,
+    val snsEndpointUrl: String,
+    val sqsEndpointUrl: String,
+    val accessKeyId: String,
+    val secretAccessKey: String,
     val topicName: String,
     val queueName: String,
     val consumers: Int? = 5,

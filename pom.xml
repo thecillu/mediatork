@@ -70,7 +70,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.4.0</version>
+            <version>5.6.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -86,8 +86,18 @@
         </dependency>
         <dependency>
             <groupId>aws.sdk.kotlin</groupId>
+            <artifactId>aws-core-jvm</artifactId>
+            <version>0.19.2-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>aws.sdk.kotlin</groupId>
             <artifactId>sns-jvm</artifactId>
             <version>0.19.2-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>1.12.142</version>
         </dependency>
         <dependency>
             <groupId>aws.sdk.kotlin</groupId>
@@ -108,6 +118,24 @@
             <groupId>com.sksamuel.hoplite</groupId>
             <artifactId>hoplite-yaml</artifactId>
             <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>localstack</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

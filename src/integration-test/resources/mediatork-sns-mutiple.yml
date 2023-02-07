@@ -6,7 +6,9 @@ mediator:
   messageBroker:
     name: awsSns
     awsSns:
-      region: eu-west-1
+      region: missing #use the localstack one
+      snsEndpointUrl: missing   #use the localstack one
+      sqsEndpointUrl: missing #use the localhost one
       topicName: platform_topic
       queueName: microservice1
       consumer:

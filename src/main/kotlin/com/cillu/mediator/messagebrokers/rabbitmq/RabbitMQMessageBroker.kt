@@ -42,7 +42,7 @@ class RabbitMQMessageBroker : IMessageBroker {
         this.consumerRetryLimit = rabbitMQConfiguration.consumerRetryLimit!!
         val factory = ConnectionFactory()
         factory.host = this.host;
-        factory.port = 5672;
+        factory.port = this.port;
         factory.username = this.username;
         factory.password = this.password;
         if (this.useSslProtocol) factory.useSslProtocol()
