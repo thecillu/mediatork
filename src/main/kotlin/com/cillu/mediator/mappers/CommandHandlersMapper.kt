@@ -18,7 +18,7 @@ class CommandHandlersMapper internal constructor(reflections: Reflections, servi
     }
 
     internal fun getHandlers():  MutableMap<String, ICommandHandler<*>> {
-        return commandHandlers;
+        return commandHandlers
     }
 
     private fun register(reflections: Reflections, servicesRegistry: ServiceRegistry) {

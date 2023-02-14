@@ -9,7 +9,7 @@ import com.cillu.mediator.queries.domain.TestQuery2
 class Query2Handler: IQueryHandler<TestQuery2> {
 
     override fun handle(query: TestQuery2): List<Item> {
-        var items = listOf(Item.create("Item1"), Item.create("Item2"));
+        var items = listOf(Item.create("Item1"), Item.create("Item2"))
         return items
     }
 }

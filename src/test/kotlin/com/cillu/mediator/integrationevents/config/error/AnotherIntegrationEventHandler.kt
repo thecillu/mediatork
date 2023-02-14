@@ -4,7 +4,7 @@ import com.cillu.mediator.annotations.Inject
 import com.cillu.mediator.annotations.IntegrationEventHandler
 import com.cillu.mediator.integrationevents.IIntegrationEventHandler
 import com.cillu.mediator.integrationevents.domain.TestIntegrationEvent
-import com.cillu.mediator.services.IAnotherService
+import com.cillu.mediator.services.*
 import mu.KotlinLogging
 
 @IntegrationEventHandler

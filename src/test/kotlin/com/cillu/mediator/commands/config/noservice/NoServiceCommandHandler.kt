@@ -6,10 +6,10 @@ import com.cillu.mediator.commands.ICommandHandler
 import com.cillu.mediator.commands.domain.NoServiceCommand
 
 @CommandHandler
-class NoServiceCommandHandler(): ICommandHandler<NoServiceCommand>, Exception(){
+class NoServiceCommandHandler : ICommandHandler<NoServiceCommand>, Exception(){
 
     override fun handle(command: NoServiceCommand): Item {
-        var item = Item.create(command.name);
+        var item = Item.create(command.name)
         return item
     }
 }

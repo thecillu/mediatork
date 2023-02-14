@@ -10,8 +10,8 @@ open class Item2 private constructor(name: String): Aggregate() {
     companion object {
         fun create(name: String): Item2 {
             var item2 = Item2(name)
-            item2.id = UUID.randomUUID();
-            return item2;
+            item2.id = UUID.randomUUID()
+            return item2
         }
     }
 }

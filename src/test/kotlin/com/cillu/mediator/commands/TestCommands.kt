@@ -20,7 +20,7 @@ class TestCommands: Base(){
     @Test
     fun testSuccessConfig() {
         val mediatorK = getMediatorK(COMMAND_CONFIG_FILE_SUCCESS)
-        val handlers = mediatorK.getCommandsHandlers();
+        val handlers = mediatorK.getCommandsHandlers()
         assert( handlers.size == 2)
         assert( handlers[TEST_COMMAND_CLASS]!!::class.java == CreateCommandHandler::class.java)
         assert( handlers[TEST_COMMAND2_CLASS]!!::class.java ==  CreateCommand2Handler::class.java)
@@ -45,7 +45,7 @@ class TestCommands: Base(){
      @Test
      fun testCommandTest() {
          val mediatorK = getMediatorK(COMMAND_CONFIG_FILE_SUCCESS)
-         val item: Item = mediatorK.send(CreateCommand( UUID.randomUUID(), "TestCommand")) as Item;
+         val item: Item = mediatorK.send(CreateCommand( UUID.randomUUID(), "TestCommand")) as Item
          assert( item.name == "TestCommand")
      }
 

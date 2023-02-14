@@ -18,7 +18,7 @@ class QueryHandlersMapper internal constructor(reflections: Reflections, service
     }
 
     internal fun getHandlers():  MutableMap<String, IQueryHandler<*>> {
-        return queryHandlers;
+        return queryHandlers
     }
 
     private fun register(reflections: Reflections, servicesRegistry: ServiceRegistry) {

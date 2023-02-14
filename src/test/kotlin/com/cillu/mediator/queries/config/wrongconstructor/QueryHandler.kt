@@ -17,7 +17,7 @@ class QueryHandler(var wrongParam: Any): IQueryHandler<TestQuery> {
     lateinit var anotherService: IAnotherService
 
     override fun handle(query: TestQuery): List<Item> {
-        var items = listOf(Item.create("Item1"));
+        var items = listOf(Item.create("Item1"))
         testService.sayhello()
         anotherService.sayhello()
         return items

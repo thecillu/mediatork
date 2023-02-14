@@ -6,12 +6,12 @@ import com.cillu.mediator.messagebrokers.IMessageBroker
 import mu.KotlinLogging
 
 
-class InMemoryMessageBroker() : IMessageBroker {
+class InMemoryMessageBroker : IMessageBroker {
 
     var integrationEvents: MutableList<IntegrationEvent> = mutableListOf()
     var bindedIntegrationEvents: MutableList<String> = mutableListOf()
     var logger = KotlinLogging.logger {}
-    lateinit var mediator: IMediator;
+    lateinit var mediator: IMediator
 
     override fun bind(integrationEventName: String) {
         bindedIntegrationEvents.add(integrationEventName)

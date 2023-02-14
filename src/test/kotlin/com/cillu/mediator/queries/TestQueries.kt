@@ -22,7 +22,7 @@ class TestQueries: Base() {
     @Test
     fun testSuccessConfig() {
         val mediatorK = getMediatorK(QUERY_CONFIG_FILE_SUCCESS)
-        val handlers = mediatorK.getQueryHandlers();
+        val handlers = mediatorK.getQueryHandlers()
         assert( handlers.size == 2)
         assert( handlers[TEST_QUERY_CLASS]!!::class.java == QueryHandler::class.java)
         assert( handlers[TEST_QUERY2_CLASS]!!::class.java  ==  Query2Handler::class.java)

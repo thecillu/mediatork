@@ -1,14 +1,13 @@
 package com.cillu.mediator
 
-import com.cillu.mediator.configuration.MediatorConfig
+import com.cillu.mediator.testutils.configuration.MediatorConfig
 import com.cillu.mediator.registry.ServiceRegistry
 import com.cillu.mediator.messagebrokers.local.InMemoryMessageBroker
 import com.cillu.mediator.services.*
 import com.sksamuel.hoplite.ConfigLoader
 
 
-open class Base()
-{
+open class Base {
     internal var COMMAND_CONFIG_FILE_SUCCESS = "/mediatork-command.yml"
     internal var COMMAND_CONFIG_FILE_SUCCESS_NOSERVICE = "/mediatork-command-noservice.yml"
     internal var COMMAND_CONFIG_FILE_MISSING = "/mediatork-command-missing.yml"

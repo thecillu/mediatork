@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-class TestIntegrationEvents(): Base() {
+class TestIntegrationEvents : Base() {
 
     private val TEST_INTEGRATIONEVENT_CLASS = "com.cillu.mediator.integrationevents.domain.TestIntegrationEvent"
     private val TEST_INTEGRATIONEVENT2_CLASS = "com.cillu.mediator.integrationevents.domain.TestIntegrationEvent2"
@@ -21,7 +21,7 @@ class TestIntegrationEvents(): Base() {
     @Test
     fun testSuccessConfig() {
         val mediatorK = getMediatorK(INTEGRATION_EVENTS_CONFIG_FILE_SUCCESS)
-        val handlers = mediatorK.getIntegrationEventsHandlers();
+        val handlers = mediatorK.getIntegrationEventsHandlers()
         assert( handlers.size == 3)
         assert( handlers[TEST_INTEGRATIONEVENT_CLASS]!!::class.java == IntegrationEventHandler::class.java)
         assert( handlers[TEST_INTEGRATIONEVENT2_CLASS]!!::class.java == IntegrationEvent2Handler::class.java)

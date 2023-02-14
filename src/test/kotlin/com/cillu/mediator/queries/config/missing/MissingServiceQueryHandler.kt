@@ -8,12 +8,12 @@ import com.cillu.mediator.queries.domain.TestQuery
 import com.cillu.mediator.services.*
 
 @QueryHandler
-class MissingServiceQueryHandler(): IQueryHandler<TestQuery> {
+class MissingServiceQueryHandler : IQueryHandler<TestQuery> {
 
     @Inject lateinit var missingService: IMissingService
 
     override fun handle(query: TestQuery): List<Item> {
-        var items = listOf(Item.create("Item1"));
+        var items = listOf(Item.create("Item1"))
         return items
     }
 }

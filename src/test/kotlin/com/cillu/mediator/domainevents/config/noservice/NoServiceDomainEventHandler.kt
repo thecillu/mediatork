@@ -7,7 +7,7 @@ import com.cillu.mediator.domainevents.IDomainEventHandler
 import mu.KotlinLogging
 
 @DomainEventHandler
-class NoServiceDomainEventHandler() : IDomainEventHandler<TestDomainEvent>, Exception() {
+class NoServiceDomainEventHandler : IDomainEventHandler<TestDomainEvent>, Exception() {
 
     private val logger = KotlinLogging.logger {}
 

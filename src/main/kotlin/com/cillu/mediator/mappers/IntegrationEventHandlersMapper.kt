@@ -18,7 +18,7 @@ class IntegrationEventHandlersMapper internal constructor(mediatorK: MediatorK, 
     }
 
     internal fun getHandlers(): MutableMap<String, IIntegrationEventHandler<*>> {
-        return integrationEventHandlers;
+        return integrationEventHandlers
     }
 
     private fun register(mediatorK: MediatorK, servicesRegistry: ServiceRegistry)

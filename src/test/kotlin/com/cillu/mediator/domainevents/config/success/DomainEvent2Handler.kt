@@ -5,8 +5,7 @@ import com.cillu.mediator.annotations.DomainEventHandler
 import com.cillu.mediator.annotations.Inject
 import com.cillu.mediator.domainevents.domain.TestDomainEvent2
 import com.cillu.mediator.domainevents.IDomainEventHandler
-import com.cillu.mediator.services.IAnotherService
-import com.cillu.mediator.services.ITestService
+import com.cillu.mediator.services.*
 import mu.KotlinLogging
 
 @DomainEventHandler

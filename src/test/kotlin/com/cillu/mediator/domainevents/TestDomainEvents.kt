@@ -13,7 +13,7 @@ import com.cillu.mediator.exceptions.NoEmptyHandlerConstructor
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class TestDomainEvents() : Base() {
+class TestDomainEvents : Base() {
 
 
     private val TEST_DOMAINEVENT_CLASS = "com.cillu.mediator.domainevents.domain.TestDomainEvent"
@@ -23,7 +23,7 @@ class TestDomainEvents() : Base() {
     @Test
     fun testSuccessConfig() {
         val mediatorK = getMediatorK(DOMAIN_EVENTS_CONFIG_FILE_SUCCESS)
-        val handlers = mediatorK.getDomainEventsHandlers();
+        val handlers = mediatorK.getDomainEventsHandlers()
         assert(handlers.size == 2)
         val handler = handlers[TEST_DOMAINEVENT_CLASS]
         val handler2 = handlers[TEST_DOMAINEVENT2_CLASS]

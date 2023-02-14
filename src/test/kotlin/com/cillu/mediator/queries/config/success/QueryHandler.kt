@@ -8,7 +8,7 @@ import com.cillu.mediator.queries.domain.TestQuery
 import com.cillu.mediator.services.*
 
 @QueryHandler
-class QueryHandler(): IQueryHandler<TestQuery> {
+class QueryHandler : IQueryHandler<TestQuery> {
 
     @Inject
     lateinit var testService: ITestService
@@ -17,7 +17,7 @@ class QueryHandler(): IQueryHandler<TestQuery> {
     lateinit var anotherService: IAnotherService
 
     override fun handle(query: TestQuery): List<Item> {
-        var items = listOf(Item.create("Item1"));
+        var items = listOf(Item.create("Item1"))
         testService.sayhello()
         anotherService.sayhello()
         return items

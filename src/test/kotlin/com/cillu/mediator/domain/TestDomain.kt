@@ -8,7 +8,7 @@ import com.cillu.mediator.queries.Query
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class TestDomain() : Base() {
+class TestDomain : Base() {
 
     @Test
     fun testCommand() {

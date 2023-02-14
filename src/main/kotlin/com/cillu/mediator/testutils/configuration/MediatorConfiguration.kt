@@ -1,4 +1,4 @@
-package com.cillu.mediator.configuration
+package com.cillu.mediator.testutils.configuration
 
 data class MediatorConfig(
     val mediator: Mediator,

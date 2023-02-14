@@ -17,7 +17,7 @@ class DomainEventHandlersMapper internal constructor(reflections: Reflections, s
     }
 
     internal fun getHandlers(): MutableMap<String, MutableSet<IDomainEventHandler<*>>> {
-        return domainEventHandlers;
+        return domainEventHandlers
     }
 
     private fun register(reflections: Reflections, servicesRegistry: ServiceRegistry) {

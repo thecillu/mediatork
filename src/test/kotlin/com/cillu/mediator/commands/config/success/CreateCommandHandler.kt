@@ -5,7 +5,7 @@ import com.cillu.mediator.annotations.CommandHandler
 import com.cillu.mediator.annotations.Inject
 import com.cillu.mediator.commands.ICommandHandler
 import com.cillu.mediator.commands.domain.CreateCommand
-import com.cillu.mediator.services.ITestService
+import com.cillu.mediator.services.*
 
 @CommandHandler
 class CreateCommandHandler: ICommandHandler<CreateCommand>, Exception(){
@@ -15,7 +15,7 @@ class CreateCommandHandler: ICommandHandler<CreateCommand>, Exception(){
     lateinit var testService: ITestService
 
     override fun handle(command: CreateCommand): Item {
-        var item = Item.create(command.name);
+        var item = Item.create(command.name)
         testService.sayhello()
         return item
     }

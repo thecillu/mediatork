@@ -6,7 +6,7 @@ import com.cillu.mediator.domainevents.domain.TestDomainEvent
 import mu.KotlinLogging
 
 @DomainEventHandler
-class WrongInterfaceDomainEventHandler() :  Exception() {
+class WrongInterfaceDomainEventHandler :  Exception() {
 
     private val logger = KotlinLogging.logger {}
 

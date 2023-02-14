@@ -8,7 +8,7 @@ import com.cillu.mediator.commands.domain.CreateCommand
 import com.cillu.mediator.services.*
 
 @CommandHandler
-class MissingServiceCommandHandler(): ICommandHandler<CreateCommand>, Exception(){
+class MissingServiceCommandHandler : ICommandHandler<CreateCommand>, Exception(){
 
     @Inject
     lateinit var missingService: IMissingService
@@ -17,9 +17,9 @@ class MissingServiceCommandHandler(): ICommandHandler<CreateCommand>, Exception(
     lateinit var anotherService: AnotherService
 
     override fun handle(command: CreateCommand): Item {
-        var item = Item.create(command.name);
+        var item = Item.create(command.name)
         missingService.sayhello()
-        anotherService.sayhello();
+        anotherService.sayhello()
         return item
     }
 }
